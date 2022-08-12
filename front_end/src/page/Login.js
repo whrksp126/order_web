@@ -1,24 +1,24 @@
 import React from 'react'
-import FloatingLabel from 'react-bootstrap/FloatingLabel';
-import Form from 'react-bootstrap/Form';
-import Container from 'react-bootstrap/Container';
-import Button from 'react-bootstrap/Button';
+
 const Login = () => {
+
+  const login_Submit = () => {
+    console.log()
+  }
+
   return (    
   <>
-    <Container>
-      <FloatingLabel controlId="floatingInput" label="Email address" className="mb-3">
-        <Form.Control type="email" placeholder="name@example.com" />
-      </FloatingLabel>
-      <FloatingLabel controlId="floatingPassword" label="Password">
-        <Form.Control type="password" placeholder="Password" />
-      </FloatingLabel>
-      <div className="d-grid gap-2">
-        <Button variant="primary" size="lg">
-          Block level button
-        </Button>
-      </div>
-    </Container>
+    <form onSubmit={login_Submit()}>
+      <label>
+        아이디 :
+        <input type="text" />
+      </label>
+      <label>
+        비밀번호 : 
+        <input type="password" />
+      </label>
+      <input type="submit" value="Login" />
+    </form>
   </>
   )
 }
