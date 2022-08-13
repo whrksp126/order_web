@@ -1,14 +1,16 @@
+import axios from 'axios'
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom';
 
 const Register = () => {
+  let navigate = useNavigate();
 
   const [SingUpData, setSingUpData] = useState(
     {
       SingUpEmail : '',
       SingUpId : '', 
       SingUpPassword:'',
-      verifyLoginPassword: ''
+      verifySingUpPassword: ''
     }
   )
 
@@ -20,7 +22,12 @@ const Register = () => {
   }
   const loginSubmit = (e) => {
     e.preventDefault();
-    console.log(JSON.stringify(SingUpData, null, 2))
+    axios.post("/register", SingUpData)
+      .then((res) => {
+        navigate('/');
+      })
+      .catch((err) => {console.log(err.response.data.message);
+      });
   }
 
   return (  
@@ -39,8 +46,8 @@ const Register = () => {
           아이디 :
           <input 
             type="text" 
-            name="loginId" 
-            value={SingUpData.loginId}
+            name="SingUpId" 
+            value={SingUpData.SingUpId}
             onChange={handleChange}
           />
         </label>
@@ -48,8 +55,8 @@ const Register = () => {
           비밀번호 : 
           <input 
             type="password"
-            name='loginPassword'
-            value={SingUpData.loginPassword}
+            name='SingUpPassword'
+            value={SingUpData.SingUpPassword}
             onChange={handleChange}
           />
         </label>
@@ -57,8 +64,8 @@ const Register = () => {
           비밀번호 확인 : 
           <input 
             type="password"
-            name='verifyLoginPassword'
-            value={SingUpData.verifyLoginPassword}
+            name='verifySingUpPassword'
+            value={SingUpData.verifySingUpPassword}
             onChange={handleChange}
           />
         </label>

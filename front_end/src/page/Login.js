@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 const Login = () => {
-  const [loginData, setLoginData] = useState({loginId : '', loginPassword:''});
+  const [loginData, setLoginData] = useState({loginEmail : '', loginPassword:''});
   let navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -33,8 +33,8 @@ const Login = () => {
   <>
     <form onSubmit={loginSubmit}>
       <label>
-        아이디 :
-        <input type="text" name="loginId" value={loginData.loginId} onChange={handleChange} />
+        이메일 :
+        <input type="email" name="loginEmail" value={loginData.loginEmail} onChange={handleChange} />
       </label>
       <label>
         비밀번호 : 
