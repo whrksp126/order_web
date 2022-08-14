@@ -1,23 +1,37 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "./Login.css"
-const Login = () => {
-  const [loginData, setLoginData] = useState({email : '', password:''});
-  let navigate = useNavigate();
 
-  const handleChange = (e) => {
+const Login = () => {
+  const navigate = useNavigate();
+
+  const [loginData, setLoginData] = useState({email : '', password:''})
+  const [SingUpData, setSingUpData] = useState({
+    email : '',
+    name : '', 
+    password:'',
+    checkPassword: ''
+  });
+  const [isLogin, setIsLogion] = useState(true);
+
+  const loginhandleChange = (e) => {
     setLoginData({
       ...loginData,
       [e.target.name] : e.target.value
     });
   };
+
+  const registerhandleChange = (e) => {
+    setSingUpData({
+      ...SingUpData,
+      [e.target.name] : e.target.value
+    })
+  }
   const loginSubmit = (e) => {
     e.preventDefault();
     axios.post("/login", loginData)
       .then((res)=> {
-        // 로그인 성공!!!
-        // 메인 페이지로 이동
         navigate('/');
       })
       .catch((err) => {
@@ -28,25 +42,58 @@ const Login = () => {
         }
       })
   };
+  const registerSubmit = (e) => {
+    e.preventDefault();
+    axios.post("/register", SingUpData)
+      .then((res) => {
+        navigate('/');
+      })
+      .catch((err) => {console.log(err.response.data.message);
+      });
+  }
+
+
+  const imgUrl = "images/logo.png"
 
   return (
     <div className="login_page">
-      <form className="form_box" onSubmit={loginSubmit}>
-        <label>
-          이메일
-        </label>
-        <input type="email" name="email" 
-          value={loginData.email} onChange={handleChange} required
-          placeholder="test@test.test"
-        />
-        <label>
-          비밀번호
-        </label>
-        <input type="password" name='password' value={loginData.password} onChange={handleChange} required
-          placeholder="testtest" autoComplete="on" />
-        <button type="submit">로그인</button>
-        <p>계정이 없으면 <Link to="/register">회원가입</Link>을 진행하세요.</p>
-      </form>
+      <div className="login_box">
+        <img src={imgUrl} alt={"logo"} />
+        {isLogin ? (
+          <form className="form_box" onSubmit={loginSubmit}>
+            <label>이메일</label>
+            <input type="email" name="email" 
+              value={loginData.email} onChange={loginhandleChange} required
+              placeholder="test@test.test"
+            />
+            <label>비밀번호</label>
+            <input type="password" name='password' value={loginData.password} onChange={loginhandleChange} required
+              placeholder="testtest" autoComplete="on" />
+            <button type="submit">로그인</button>
+          </form>
+        ) : (
+          <form className="form_box" onSubmit={registerSubmit}>
+            <label>이메일</label>
+            <input type="email" name="email" 
+              value={SingUpData.email} onChange={registerhandleChange} required
+              placeholder="test@test.test"
+            />
+            <label>이름</label>
+            <input type="text" name="name" 
+              value={SingUpData.name} onChange={registerhandleChange} required
+              placeholder="test"
+            />
+            <label>비밀번호</label>
+            <input type="password" name='password' value={SingUpData.password} onChange={registerhandleChange} required
+              placeholder="testtest" autoComplete="on" />
+            <label>비밀번호 확인</label>
+            <input type="password" name='subPassword' value={SingUpData.subPassword} onChange={registerhandleChange} required
+              placeholder="testtest" autoComplete="on" />
+            <button type="submit">회원가입</button>
+          </form>
+        )}
+        <p>계정이 없으면 <span className="a_tag" onClick={()=>setIsLogion(!isLogin)}>{isLogin ? '회원가입' : '로그인'}</span>을 진행하세요.</p>
+      </div>
     </div>
   );
 };
