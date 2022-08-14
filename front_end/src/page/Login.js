@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import "./Login.css"
 const Login = () => {
-  const [loginData, setLoginData] = useState({loginEmail : '', loginPassword:''});
+  const [loginData, setLoginData] = useState({email : '', password:''});
   let navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -20,30 +21,33 @@ const Login = () => {
         navigate('/');
       })
       .catch((err) => {
-        if(err.response.status === 403){
-          console.log(err.response.data.message)
+        if(err.response.status === 401){
+          console.log(err)
         }else{
-          console.log('오류발생',err)
+          console.log(err)
         }
       })
-    // console.log(JSON.stringify(loginData, null, 2));
   };
 
-  return (    
-  <>
-    <form onSubmit={loginSubmit}>
-      <label>
-        이메일 :
-        <input type="email" name="loginEmail" value={loginData.loginEmail} onChange={handleChange} />
-      </label>
-      <label>
-        비밀번호 : 
-        <input type="password" name='loginPassword' value={loginData.loginPassword} onChange={handleChange} />
-      </label>
-      <button type="submit">로그인</button>
-    </form>
-    <p>계정이 없으면 <Link to="/register">회원가입</Link>을 진행하세요.</p>
-  </>
+  return (
+    <div className="login_page">
+      <form className="form_box" onSubmit={loginSubmit}>
+        <label>
+          이메일
+        </label>
+        <input type="email" name="email" 
+          value={loginData.email} onChange={handleChange} required
+          placeholder="test@test.test"
+        />
+        <label>
+          비밀번호
+        </label>
+        <input type="password" name='password' value={loginData.password} onChange={handleChange} required
+          placeholder="testtest" autoComplete="on" />
+        <button type="submit">로그인</button>
+        <p>계정이 없으면 <Link to="/register">회원가입</Link>을 진행하세요.</p>
+      </form>
+    </div>
   );
 };
 

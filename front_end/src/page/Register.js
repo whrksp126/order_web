@@ -7,10 +7,10 @@ const Register = () => {
 
   const [SingUpData, setSingUpData] = useState(
     {
-      SingUpEmail : '',
-      SingUpId : '', 
-      SingUpPassword:'',
-      verifySingUpPassword: ''
+      email : '',
+      name : '', 
+      password:'',
+      checkPassword: ''
     }
   )
 
@@ -35,40 +35,41 @@ const Register = () => {
       <form onSubmit={loginSubmit}>
         <label>
           이메일 :
-          <input 
-            type="email" 
-            name="SingUpEmail" 
-            value={SingUpData.SingUpEmail}
-            onChange={handleChange}
-          />
         </label>
+        <input 
+          type="email" 
+          name="email" 
+          value={SingUpData.email}
+          onChange={handleChange}
+        />
         <label>
           아이디 :
-          <input 
-            type="text" 
-            name="SingUpId" 
-            value={SingUpData.SingUpId}
-            onChange={handleChange}
-          />
         </label>
+        <input 
+          type="text" 
+          name="name" 
+          value={SingUpData.name}
+          onChange={handleChange}
+        />
         <label>
           비밀번호 : 
-          <input 
-            type="password"
-            name='SingUpPassword'
-            value={SingUpData.SingUpPassword}
-            onChange={handleChange}
-          />
         </label>
+        <input 
+          type="password"
+          name='password'
+          value={SingUpData.password}
+          onChange={handleChange}
+          autoComplete="on"
+        />
         <label>
           비밀번호 확인 : 
-          <input 
-            type="password"
-            name='verifySingUpPassword'
-            value={SingUpData.verifySingUpPassword}
-            onChange={handleChange}
-          />
         </label>
+        <input 
+          type="password"
+          name='checkPassword'
+          value={SingUpData.checkPassword}
+          onChange={handleChange}
+        />
         <button type="submit">로그인</button>
       </form>
       <p>이미 계정이 있으면 <Link to="/login">로그인</Link>을 진행하세요.</p>

@@ -26,3 +26,9 @@ package-lock.json
 front_end/public/*
 
 /server/venv/*
+
+server/db.sqlite
+
+.env
+
+server/__pycache__/
