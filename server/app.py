@@ -8,6 +8,7 @@ from flask_bcrypt import Bcrypt
 from flask_session import Session
 from config import ApplicationConfig
 from models import db, User
+from datetime import timedelta
 
 app = Flask(__name__)
 app.config.from_object(ApplicationConfig)
@@ -22,7 +23,6 @@ with app.app_context():
 @app.route("/@me")
 def get_current_user():
   user_id = session.get("user_id")
-  
   if not user_id:
     return jsonify({"error": "Unauthorized"}), 401
   
@@ -72,9 +72,8 @@ def login_user():
     return jsonify({"error": "일치하는 유저 정보가 없습니다."}), 401
   # 비밀번호 일치 검사 끝
   
+  # user_id를 이용하여 세션만들기
   session["user_id"] = user.id
-  print('user.id,',user.id)
-  print('session,',session["user_id"])
   
   return jsonify({
     "id": user.id,
@@ -85,7 +84,14 @@ def login_user():
 def logout_user():
   session.pop("user_id")
   return "200"
-  
+
+# 매 요청마다 실행
+@app.before_request
+def make_session_permanent():
+  session.permanent = True
+  # 마지막 요청으로 부터 5분 후 세션이 만료됨
+  app.permanent_session_lifetime = timedelta(minutes=5)
+
 if __name__=='__main__':
   app.run(debug=True)
   

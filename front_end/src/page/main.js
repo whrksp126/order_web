@@ -1,7 +1,10 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
-import MenuItem from '../component/MenuItem'
+import MainHeader from '../component/MainHeader';
+import MainMenuList from '../component/MainMenuList';
+import MainOrderList from '../component/MainOrderList';
+import "./Main.css"
 
 const Main = () => {
   let navigate = useNavigate();
@@ -27,17 +30,29 @@ const Main = () => {
   return (
     <div>
       {user !== null ? (
-        <>
-          <h1>로그인한 유저</h1>
-          <button onClick={logoutUser}>로그아웃</button>
-          {/* <MenuItem/> */}
-        </>
+        <div className="main_base">
+          <div className="main_container">
+            <MainHeader />
+            {/* <button onClick={logoutUser}>로그아웃</button> */}
+            <div style={{display: 'flex', height: '88vh' }}>
+              <div style={{background:"rgb(255 200 200)", height:'88vh', width:"65%"}}>
+                <MainMenuList  />
+                <div style={{background:"rgb(255 237 237)", height:"10vh"}}>
+                  <button>주문취소</button>
+                  <button>주문하기</button>
+                </div>
+              </div>
+              <MainOrderList />
+            </div>
+            
+          </div>
+        </div>
       ) : (
-        <>
+        <div className="main_container">
           <h1>비회원 유저</h1>
           <Link to={"/login"}><button>로그인</button></Link>
           <Link to={"/registe"}><button>회원가입</button></Link>
-        </>
+        </div>
       )} 
     </div>
   )
