@@ -1,10 +1,28 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "./Login.css"
 
 const Login = () => {
   const navigate = useNavigate();
+
+  const [ user, setUser ] = useState(null);
+  useEffect(() => {
+    const is_auth = async () => {
+      try{
+        const resp = await axios.get("/@me");
+        setUser(resp.data)
+      }catch(err){
+        console.log(err)
+      }
+    };
+    is_auth()
+  },[])
+  useEffect(()=>{
+    if(user!=null){
+      navigate('/')
+    }
+  }, [user])
 
   const [loginData, setLoginData] = useState({email : '', password:''})
   const [SingUpData, setSingUpData] = useState({
