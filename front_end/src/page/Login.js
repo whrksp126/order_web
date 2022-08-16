@@ -1,13 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "./Login.css"
 
 const Login = () => {
   const navigate = useNavigate();
+  const inputRef = useRef();
+  
 
   const [ user, setUser ] = useState(null);
   useEffect(() => {
+    inputRef.current.focus();
     const is_auth = async () => {
       try{
         const resp = await axios.get("/@me");
@@ -80,7 +83,7 @@ const Login = () => {
         {isLogin ? (
           <form className="form_box" onSubmit={loginSubmit}>
             <label>이메일</label>
-            <input type="email" name="email" 
+            <input type="email" name="email" ref={inputRef}
               value={loginData.email} onChange={loginhandleChange} required
               placeholder="test@test.test"
             />
