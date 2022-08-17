@@ -1,5 +1,6 @@
 import React from 'react'
 import MenuItem from './MenuItem'
+import './MainMenuList.css'
 
 let foodApi = 
 [
@@ -43,7 +44,7 @@ let foodApi =
 const MainMenuList = () => {
 
   return (
-    <div style={{height:"78vh", padding: "2rem", padding: "1em", justifyContent: "start", alignItems: "self-start", display: "flex", flexFlow: "wrap"}}>
+    <div className="MenuList">
       {
         foodApi.map((food, index)=> (
           <MenuItem key={index} name={food.foodName} price={food.foodPrice} url={food.foodUrl} /> 
