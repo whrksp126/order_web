@@ -1,0 +1,12 @@
+.menuItem {
+  display: inline-block;
+  border-radius: 2px;
+}
+.menuItem img {
+  width: 200px; 
+  height: 180px;
+}
+
+.menuInfo {
+  text-align: center ;
+}
