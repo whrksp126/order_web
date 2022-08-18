@@ -95,3 +95,9 @@
   font-weight: 900;
   text-decoration: underline;
 }
+
+/* input 자동완성 시 배경색  */
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+  -webkit-text-fill-color: #ff9d9d;
+}

@@ -8,7 +8,6 @@ import "./Main.css"
 
 const Main = () => {
   let navigate = useNavigate();
-
   const [ user, setUser ] = useState(null);
   useEffect(() => {
     const is_auth = async () => {
