@@ -18,13 +18,30 @@ const MainOrderList = () => {
       let newItem = {
         name : item.name,
         price : item.price,
-        url : item.url
+        url : item.url,
+        count : 1,
       }
-      console.log("selectedItem",selectedItem)
-      setSelectedItem([...selectedItem, newItem])
-      console.log("newItem",newItem)
+      changeCondition(newItem)
     }
   }))
+
+  const changeCondition = (newItem) => {
+    
+    setSelectedItem((prevState) => {
+        // let newCondition = { ...current };
+        // newCondition[key] = value;
+        
+        return [...prevState, newItem]  
+    });
+};
+
+
+  function handleOnClick(newItem) {
+    setSelectedItem((selectedItem) => {
+      return [...selectedItem, newItem]
+    })
+  }
+
   return (
     <div className="MainOrderList">
 
@@ -49,11 +66,11 @@ const MainOrderList = () => {
           <tbody>
             {selectedItem.map((item, index) => (
             <tr key={index}>
-                <td>{index}</td>
-                <td>{item.url}</td>
-                <td>{item.name}</td>
-                <td>{item.price}</td>
-              <td>2</td>
+              <td>{index+1}</td>
+              <td>{item.url}</td>
+              <td>{item.name}</td>
+              <td>{item.price}</td>
+              <td>{item.count}</td>
               <td>
                 + - 삭제
               </td>
