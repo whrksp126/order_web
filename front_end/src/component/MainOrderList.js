@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './MainOrderList.css'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartPlus } from "@fortawesome/free-solid-svg-icons";
@@ -16,21 +16,20 @@ const MainOrderList = () => {
     }),
     drop: (item, monitor) => {
       let newItem = {
-        "name" : item.name,
-        "price" : item.price,
-        "url" : item.url
+        name : item.name,
+        price : item.price,
+        url : item.url
       }
-      setSelectedItem(
-        [...selectedItem, newItem]
-      )
+      console.log("selectedItem",selectedItem)
+      setSelectedItem([...selectedItem, newItem])
+      console.log("newItem",newItem)
     }
   }))
-
   return (
     <div className="MainOrderList">
 
       <div style={{height: '20%', display:'flex', justifyContent: 'center', fontSize: '70px', color: 'white', textAlign: 'center', alignItems: 'center', border: '3px solid white', borderRadius: '20px', margin: '20px'}}>
-        <div ref={drop} style={{ backgroundColor: isOver ? 'red' : 'white' }} style={{}}>
+        <div ref={drop} style={{ backgroundColor: isOver ? 'red' : 'white' }}>
           <FontAwesomeIcon icon={faCartPlus} />
           <span style={{ display: 'block', fontWeight: '700', fontSize:'18px'}}>{canDrop ? '담 기' : '장바구니'}</span>
         </div>
