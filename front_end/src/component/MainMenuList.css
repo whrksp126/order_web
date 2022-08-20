@@ -5,4 +5,5 @@
   align-items: self-start;
   display: flex;
   flex-flow: wrap;
+  overflow: hidden;
 }
