@@ -90,7 +90,7 @@ def logout_user():
 def make_session_permanent():
   session.permanent = True
   # 마지막 요청으로 부터 5분 후 세션이 만료됨
-  app.permanent_session_lifetime = timedelta(minutes=5)
+  # app.permanent_session_lifetime = timedelta(minutes=5)
 
 if __name__=='__main__':
   app.run(debug=True)

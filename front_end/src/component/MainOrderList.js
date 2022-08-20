@@ -6,6 +6,7 @@ import { useDrop } from 'react-dnd';
 
 const MainOrderList = () => {
   const [selectedItem, setSelectedItem] = useState([]);
+  const [newItem, setNewItem] = useState();
   const [{ canDrop, isOver }, drop] = useDrop(() => ({
     //수락할 유형 - 문자열 또는 기호
     accept: 'BOX',
@@ -15,32 +16,32 @@ const MainOrderList = () => {
       canDrop: monitor.canDrop()
     }),
     drop: (item, monitor) => {
-      let newItem = {
+      setNewItem ({
         name : item.name,
         price : item.price,
         url : item.url,
         count : 1,
-      }
-      changeCondition(newItem)
+      })
     }
   }))
 
-  const changeCondition = (newItem) => {
-    
-    setSelectedItem((prevState) => {
-        // let newCondition = { ...current };
-        // newCondition[key] = value;
-        
-        return [...prevState, newItem]  
-    });
-};
-
-
-  function handleOnClick(newItem) {
-    setSelectedItem((selectedItem) => {
-      return [...selectedItem, newItem]
-    })
-  }
+  useEffect(()=> {
+    if(selectedItem.length === 0 && newItem !== undefined){
+      // 아무것도 장바구니에 없을 때
+      return setSelectedItem([...selectedItem, newItem]);
+    }else if(selectedItem.length !== 0){
+      // 장바구니에 하나라도 있을 때
+      for(let i=0;i<selectedItem.length;i++){
+        console.log('i,',i)
+        if(selectedItem[i].name === newItem.name){
+          console.log('1번 실행됨')
+          selectedItem[i].count = selectedItem[i].count+1;
+          return setSelectedItem([...selectedItem])
+        } 
+      }
+      return setSelectedItem([...selectedItem, newItem]);
+    }
+  },[newItem])
 
   return (
     <div className="MainOrderList">
