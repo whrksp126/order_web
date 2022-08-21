@@ -8,12 +8,12 @@
 .login_box {
   margin: auto;
   width: 40rem;
-  padding: 0rem 2rem 2rem 2rem;
-  border-radius: 10px;
+  padding: 0vh 2vw 2vh 2vw;
+  border-radius: 1vw;
   position: relative;
-  top: -10px;
-  max-width: 500px;
-  box-shadow: 10px 10px 30px 10px rgb(255 200 200)
+  top: -2vh;
+  max-width: 25vw;
+  box-shadow: 10px 10px 30px 10px rgb(255 200 200);
 }
 
 .login_box img {
@@ -24,68 +24,68 @@
 
 .form_box {
   position: relative;
-  top: -60px;
+  top: -5vh;
 }
 
 .form_box label {
-  font-size:16px;
+  font-size: 1.7vh;
   font-weight: 600;
   color:rgb(255 157 157)
 }
 
 .form_box input {
   width: 100%;
-  height: 2.5rem;
-  padding-left: 1rem;
-  border: 1.5px solid rgb(255 206 206);
-  border-radius: 5px;
+  height: 4vh;
+  padding-left: 1vw;
+  border: 0.1vw solid rgb(255 206 206);
+  border-radius: 0.2vw;
   color: rgb(255 157 157);
-  margin-bottom: 1rem;
+  margin-bottom: 2vh;
 }
 .form_box input::placeholder {
   color: rgb(255 157 157)
 }
 
 .form_box input:focus {
-  border: 2px solid rgb(255 157 157);
+  border: 0.12vw solid rgb(255 157 157);
   outline: none
 }
 
 .form_box button {
-  border-radius: 5px;
-  height: 2.5rem;
+  border-radius: 0.2vw;
+  height: 4vh;
   background: rgb(255 200 200);
   border: none;
   width: 100%;
-  font-size: 16px;
+  font-size: 1.5vh;
   font-weight: 600;
   color: rgb(255, 255, 255);
-  margin-top: 5px;
+  margin-top: 0.5vh;
 }
 
 .form_box button:hover {
   background: rgb(255 157 157);
-  font-size: 17px;
+  font-size: 1.7vh;
 }
 .form_box button:active {
   background: rgb(255 200 200);
   border: 2px solid rgb(255 157 157);
-  font-size: 18px;
+  font-size: 1.8vh;
 }
 .form_box button:focus-visible{
   background: rgb(255 200 200);
   border: 2px solid rgb(255 157 157);
-  font-size: 18px;
+  font-size: 1.8vh;
   outline: none;
 
 }
 
 .login_box p {
   float: right;
-  font-size: 12px;
+  font-size: 1.2vh;
   color: rgb(255 200 200);
   position: relative;
-  top: -30px;
+  top: -3.5vh;
 }
 
 .login_box p .a_tag {

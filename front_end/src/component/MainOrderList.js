@@ -44,6 +44,14 @@ const MainOrderList = () => {
     }
   },[newItem])
 
+  // 장바구니 리스트의 총 가격 계산 시작
+  let totallPrice = 0;
+  selectedItem.map((item, index) => (
+    totallPrice = totallPrice + (item.price * item.count)
+  ))
+  // 장바구니 리스트의 총 가격 계산 시작
+
+
   const plusItem = (item) => {
     for(let i=0;i<selectedItem.length;i++){
       if(selectedItem[i].name === item.name){
@@ -70,6 +78,7 @@ const MainOrderList = () => {
     return setSelectedItem(selectedItem.filter(i => i.name !== item.name));
   }
 
+
   return (
     <div className="MainOrderList">
 
@@ -80,48 +89,52 @@ const MainOrderList = () => {
         </div>
       </div>
       <div style={{height: '60%', padding: '20px', background: '#eeeeee'}}>
-        <table style={{width: '100%'}}>
-          <thead>
-            <tr>
-              <th>번호</th>
-              <th>이미지</th>
-              <th>상품명</th>
-              <th>가격</th>
-              <th></th>
-              <th>수량</th>
-              <th></th>
-              <th>버튼</th>
-            </tr>
-          </thead>
-          <tbody>
-            {selectedItem.map((item, index) => (
-            <tr key={index}>
-              <td>{index+1}</td>
-              <td>
-                <img src={'images/'+ item.url} alt={"foodIcon"} style={{height:'5vh'}} />
-              </td>
-              <td>{item.name}</td>
-              <td>{item.price}</td>
-              <td>
-                <button onClick={()=> plusItem(item)}>
-                  <FontAwesomeIcon icon={faPlus} />
-                </button>
-              </td>
-              <td>{item.count}</td>
-              <td>
-                <button onClick={()=> minusItem(item)}>
-                  <FontAwesomeIcon icon={faMinus} />
-                </button>
-              </td>
-              <td>
-                <button onClick={()=> deleteItem(item)}>
-                  <FontAwesomeIcon icon={faTrash} />
-                </button>
-              </td>
-            </tr>)
-            )}
-          </tbody>
-        </table>
+        <div style={{height: '46vh'}}>
+          <table style={{width: '100%', }}>
+            <thead>
+              <tr>
+                <th>번호</th>
+                <th>이미지</th>
+                <th>상품명</th>
+                <th>가격</th>
+                <th></th>
+                <th>수량</th>
+                <th></th>
+                <th>버튼</th>
+              </tr>
+            </thead>
+            <tbody>
+              {selectedItem.map((item, index) => (
+              <tr key={index}>
+                <td>{index+1}</td>
+                <td>
+                  <img src={'images/'+ item.url} alt={"foodIcon"} style={{height:'5vh'}} />
+                </td>
+                <td>{item.name}</td>
+                <td>{item.price}</td>
+                <td>
+                  <button onClick={()=> plusItem(item)}>
+                    <FontAwesomeIcon icon={faPlus} />
+                  </button>
+                </td>
+                <td>{item.count}</td>
+                <td>
+                  <button onClick={()=> minusItem(item)}>
+                    <FontAwesomeIcon icon={faMinus} />
+                  </button>
+                </td>
+                <td>
+                  <button onClick={()=> deleteItem(item)}>
+                    <FontAwesomeIcon icon={faTrash} />
+                  </button>
+                </td>
+              </tr>)
+              )}
+            </tbody>
+          </table>
+        </div>
+          {selectedItem.length > 0 && <div style={{float: 'right'}}>총 가격 : {totallPrice}</div>}
+        
       </div>
       <div><button>주문하기</button></div>
     </div>

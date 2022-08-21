@@ -1,10 +1,9 @@
 .menuItem {
   display: inline-block;
-  border-radius: 2px;
 }
 .menuItem img {
-  width: 200px; 
-  height: 180px;
+  width: 10vw;
+  height: 14vh;
 }
 
 .menuInfo {
