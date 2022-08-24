@@ -32,3 +32,5 @@ server/db.sqlite
 .env
 
 server/__pycache__/
+
+image_list/

@@ -9,7 +9,8 @@ from flask_session import Session
 from config import ApplicationConfig
 from models import db, User
 from datetime import timedelta
-
+from models import Menu_items
+from database import db_session
 app = Flask(__name__)
 app.config.from_object(ApplicationConfig)
 
@@ -61,7 +62,8 @@ def login_user():
   email = request.json['email']
   password = request.json['password']
   
-  user = User.query.filter_by(email=email).first()
+  # user = User.query.filter_by(email=email).first()
+  user = db_session.query(User).filter(User.email == email).first()
   # 이메일 유효성 검사 시작
   if user is None:
     return jsonify({"error": "일치하는 유저 정보가 없습니다."}), 401
@@ -91,9 +93,11 @@ def make_session_permanent():
   session.permanent = True
   # 마지막 요청으로 부터 5분 후 세션이 만료됨
   # app.permanent_session_lifetime = timedelta(minutes=5)
-
+  
 if __name__=='__main__':
   app.run(debug=True)
+
+
   
   
 # @app.route('/')
