@@ -7,7 +7,7 @@ from flask import Flask, jsonify, request, session
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 from config import ApplicationConfig
-from models import db, User
+from models import db, User, Menu_type_list
 from datetime import timedelta
 from models import Menu_items
 from database import db_session
@@ -32,7 +32,21 @@ def get_current_user():
     "id": user.id,
     "email": user.email
   })
+
+
+@app.route("/add_menu_list", methods=["POST"])
+def add_menu_list():
+  list_name = request.json["list_name"]
   
+  menu_type_list = Menu_type_list(name=list_name)
+  db_session.add(menu_type_list)
+  db_session.commit()
+  db_session.close()  
+  return jsonify({
+    "list_id": menu_type_list.id,
+    "list_name" : menu_type_list.name
+  })
+    
 
 @app.route("/register", methods=["POST"])
 def register_user():

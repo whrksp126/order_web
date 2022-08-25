@@ -30,6 +30,7 @@ const Main = () => {
     <div>
       {user !== null ? (
         <div className="main_base">
+          <Link to={'/admin'}><button>관리자 설정</button></Link>
           <div className="main_container">
             <MainHeader />
             {/* <button onClick={logoutUser}>로그아웃</button> */}
