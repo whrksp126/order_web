@@ -7,7 +7,4 @@ Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 db_session = Session()
 
 Base = declarative_base()
-  
-Base.metadata.tables
-Base.metadata.create_all(engine)
 

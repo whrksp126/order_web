@@ -33,19 +33,40 @@ def get_current_user():
     "email": user.email
   })
 
+@app.route("/menu_list", methods=["POST"])
+def menu_list():
+  try:
+    menu_list = db_session.query(Menu_type_list).all()
+    if menu_list:
+      array = [];
+      for list in menu_list:
+        data = {
+          "id" : list.id,
+          "name" : list.name
+        }
+        array.append(data)
+      print('array',array)
+      return jsonify(array)
+  except:
+    db_session.rollback()
+  
+
 
 @app.route("/add_menu_list", methods=["POST"])
 def add_menu_list():
   list_name = request.json["list_name"]
-  
-  menu_type_list = Menu_type_list(name=list_name)
-  db_session.add(menu_type_list)
-  db_session.commit()
-  db_session.close()  
-  return jsonify({
-    "list_id": menu_type_list.id,
-    "list_name" : menu_type_list.name
-  })
+  try:
+    menu_type_list = Menu_type_list(name=list_name)
+    db_session.add(menu_type_list)
+    db_session.commit()
+    db_session.close()  
+    return jsonify({
+      "list_name" : list_name
+    })    
+  except:
+    db_session.rollback()
+    db_session.close()  
+
     
 
 @app.route("/register", methods=["POST"])

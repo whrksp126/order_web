@@ -3,8 +3,12 @@ from sqlalchemy import create_engine, Column, Integer, String, TEXT, Enum, VARCH
 
 from uuid import uuid4
 
-from database import Base
+from database import Base, engine
 db = SQLAlchemy()
+
+Base.metadata.tables
+Base.metadata.create_all(engine)
+
 
 def get_uuid():
   # uuid4().hex 는 랜덤 아이디를 16진법으로 만들겠다
@@ -41,3 +45,4 @@ class category_list(Base):
   id = Column(Integer, primary_key=True, unique=True, nullable=False, autoincrement=True)
   name = Column(String(45), nullable=False, unique=True)
 
+  
