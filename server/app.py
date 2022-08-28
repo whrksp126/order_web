@@ -3,6 +3,7 @@
 # // 서버는 세션 ID를 참조하는 모든 세션을 확인합니다.
 # // 해당 ID의 세션이 있으면 인증됩니다.
 
+from array import array
 from flask import Flask, jsonify, request, session
 from flask_bcrypt import Bcrypt
 from flask_session import Session
@@ -33,6 +34,27 @@ def get_current_user():
     "email": user.email
   })
 
+@app.route("/menu_items", methods=["POST"])
+def menu_items():
+  try:
+    menu_items = db_session.query(Menu_items).all()
+    if menu_items:
+      array = []
+      for menu in menu_items:
+        data = {
+          "id": menu.id,
+          "name": menu.name,
+          "price": menu.price,
+          "img_url" : menu.img_url,
+          "description": menu.description,
+        }
+        array.append(data)
+      return jsonify(array)
+  except:
+    db_session.rollback()
+    
+    
+
 @app.route("/menu_list", methods=["POST"])
 def menu_list():
   try:
@@ -45,8 +67,21 @@ def menu_list():
           "name" : list.name
         }
         array.append(data)
-      print('array',array)
       return jsonify(array)
+  except:
+    db_session.rollback()
+
+@app.route("/delete_menu_list", methods=["POST"])
+def delete_menu_list():
+  try:
+    menu_list_id = request.json["menu_list_id"]
+    menu_list_query = db_session.query(Menu_type_list).get(menu_list_id)
+    db_session.delete(menu_list_query)
+    db_session.commit()
+    db_session.close()
+    return jsonify({
+      'menu_list_id': menu_list_id,
+    })
   except:
     db_session.rollback()
   

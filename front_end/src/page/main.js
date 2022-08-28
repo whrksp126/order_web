@@ -1,12 +1,14 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
-import MainHeader from '../component/MainHeader';
-import MainMenuList from '../component/MainMenuList';
-import MainOrderList from '../component/MainOrderList';
+import Client from '../component/Client';
+import Manager from '../component/Manager';
 import "./Main.css"
 
 const Main = () => {
+  const [isClient, setIsClient] = useState(false);
+  const [isManager, setIsManager] = useState(false);
+
   let navigate = useNavigate();
   const [ user, setUser ] = useState(null);
   useEffect(() => {
@@ -30,21 +32,15 @@ const Main = () => {
     <div>
       {user !== null ? (
         <div className="main_base">
-          <Link to={'/admin'}><button>관리자 설정</button></Link>
           <div className="main_container">
-            <MainHeader />
-            {/* <button onClick={logoutUser}>로그아웃</button> */}
-            <div style={{display: 'flex', height: '88vh' }}>
-              <div style={{background:"rgb(255 200 200)", height:'88vh', width:"65%"}}>
-                <MainMenuList />
-                <div style={{background:"rgb(255 237 237)", height:"10vh"}}>
-                  <button>주문취소</button>
-                  <button>주문하기</button>
-                </div>
-              </div>
-              <MainOrderList />
+            {!isClient && !isManager && (
+            <div>
+              <button onClick={()=>setIsClient(true)}>고객용</button>
+              <button style={{ position : "absolute", top: "0", right: "0", background: "rgba(0, 0, 0, 0)", color: "rgba(0, 0, 0, 0)", border: "rgba(0, 0, 0, 0)",}} onClick={()=>setIsManager(true)}>관리자용</button>
             </div>
-            
+            )}
+            {isClient && <Client />}
+            {isManager && <Manager />}
           </div>
         </div>
       ) : (
