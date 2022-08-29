@@ -16,3 +16,32 @@
   height: 100%;
   margin: auto;
 }
+
+.main_table {
+  background-color: red;
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 10vh;
+  height: 80vh;
+  border-radius: 3vw;
+  align-items: center;
+}
+
+.main_table > div {
+  background-color: white;
+  height: 40vh;
+  width: 20vw;
+  display: flex;
+  text-align: center;
+  flex-flow: column;
+}
+
+.main_table > div > div {
+  display: flex;
+  justify-content: center;
+  background: yellow;
+  align-items: center;
+  height: 10vh;
+  width: 15vw;
+  margin: auto
+}

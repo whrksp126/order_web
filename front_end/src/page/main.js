@@ -33,14 +33,40 @@ const Main = () => {
       {user !== null ? (
         <div className="main_base">
           <div className="main_container">
-            {!isClient && !isManager && (
+
+            <div className="main_table" >
+              <div>
+                <div>
+                  <div>테이블</div>
+                </div>
+                <div style={{ background: "yellow", width: "15vw", height: "10vh", margin: "auto"}}>
+                  <div>주방</div>
+                </div>
+                <div style={{ background: "yellow", width: "15vw", height: "10vh", margin: "auto"}}>
+                  <div>계산대</div>
+                </div>
+              </div>
+
+              <div>
+                <div >
+                  <div>영업관리</div>
+                </div>
+                <div >
+                  <div>매출관리</div>
+                </div>
+                <div >
+                  <div>환경설정</div>
+                </div>
+              </div>
+            </div>
+            {/* {!isClient && !isManager && (
             <div>
               <button onClick={()=>setIsClient(true)}>고객용</button>
               <button style={{ position : "absolute", top: "0", right: "0", background: "rgba(0, 0, 0, 0)", color: "rgba(0, 0, 0, 0)", border: "rgba(0, 0, 0, 0)",}} onClick={()=>setIsManager(true)}>관리자용</button>
             </div>
-            )}
-            {isClient && <Client />}
-            {isManager && <Manager />}
+            )} */}
+            {/* {isClient && <Client />} */}
+            {/* {isManager && <Manager />} */}
           </div>
         </div>
       ) : (
