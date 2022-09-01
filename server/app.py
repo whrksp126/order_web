@@ -1,17 +1,7 @@
-from flask import Flask
-from config import ApplicationConfig
-from flask_sqlalchemy import SQLAlchemy
-
-app = Flask(__name__)
-app.config.from_object(ApplicationConfig)
-
-db = SQLAlchemy(app)
-db.init_app(app)
-
-db.create_all()
+from routes import app
 
 if __name__=='__main__':
-  app.run(debug=True)
+  app.run(host='0.0.0.0', debug=True, port=5000)
 
 # # // 로그인 후 -> 서버는 "session_id"라는 쿠키를 설정합니다.
 # # // 클라이언트가 요청할 때마다 -> 서버가 해당 세션 session_id를 수신합니다.

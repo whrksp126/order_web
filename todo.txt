@@ -70,4 +70,7 @@
 
     3. 관리자 페이지 menu list api 만들기
 
+    4. MYSQL DB 연결
+
+    
     
