@@ -11,26 +11,25 @@ const Main = () => {
 
   let navigate = useNavigate();
   const [ user, setUser ] = useState(null);
-  useEffect(() => {
-    const is_auth = async () => {
-      try{
-        const resp = await axios.get("/@me");
-        setUser(resp.data)
-      }catch(err){
-        console.log(err)
-      }
-    };
-    is_auth();
-  },[])
+  // useEffect(() => {
+  //   const is_auth = async () => {
+  //     try{
+  //       const resp = await axios.get("/@me");
+  //       setUser(resp.data)
+  //     }catch(err){
+  //       console.log(err)
+  //     }
+  //   };
+  //   is_auth();
+  // },[])
 
-  const logoutUser = async() => {
-    await axios.post("/logout");
-    navigate('/login');
+  const logout = async() => {
+    await axios.post("/auth/logout");
+    // navigate('/login');
   }
 
   return (
     <div>
-      {user !== null ? (
         <div className="main_base">
           <div className="main_container">
 
@@ -49,7 +48,7 @@ const Main = () => {
 
               <div>
                 <div >
-                  <div>영업관리</div>
+                  <div onClick={()=>{navigate("/admin")}}>영업관리</div>
                 </div>
                 <div >
                   <div>매출관리</div>
@@ -59,23 +58,14 @@ const Main = () => {
                 </div>
               </div>
             </div>
-            {/* {!isClient && !isManager && (
-            <div>
-              <button onClick={()=>setIsClient(true)}>고객용</button>
-              <button style={{ position : "absolute", top: "0", right: "0", background: "rgba(0, 0, 0, 0)", color: "rgba(0, 0, 0, 0)", border: "rgba(0, 0, 0, 0)",}} onClick={()=>setIsManager(true)}>관리자용</button>
-            </div>
-            )} */}
-            {/* {isClient && <Client />} */}
-            {/* {isManager && <Manager />} */}
           </div>
         </div>
-      ) : (
         <div className="main_container">
           <h1>비회원 유저</h1>
           <Link to={"/login"}><button>로그인</button></Link>
           <Link to={"/registe"}><button>회원가입</button></Link>
+          <button onClick={()=>logout()} >로그아웃</button>
         </div>
-      )} 
     </div>
   )
 }
