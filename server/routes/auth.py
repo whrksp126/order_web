@@ -8,20 +8,20 @@ from flask_login import login_user, current_user, logout_user, login_required
 from . import *
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
-@login_manager.user_loader
-def load_user(user_id):
-  return User.query.filter_by(id=user_id).first()
+# @login_manager.user_loader
+# def load_user(user_id):
+#   return User.query.filter_by(id=user_id).first()
 
-# 로그인이 안된 사용자가 @login_required 데코레이터로 된 api에 접속한 경우 
-# unauthorized 함수로 반환 시켜줌 
-@login_manager.unauthorized_handler
-def unauthorized():
-  print('로그인 검증 실패')
-  return jsonify(
-        message='로그인 후 이용가능한 api 입니다.', 
-        category='error',
-        status=404
-      )
+# # 로그인이 안된 사용자가 @login_required 데코레이터로 된 api에 접속한 경우 
+# # unauthorized 함수로 반환 시켜줌 
+# @login_manager.unauthorized_handler
+# def unauthorized():
+#   print('로그인 검증 실패')
+#   return jsonify(
+#     message='로그인 후 이용가능한 api 입니다.', 
+#     category='error',
+#     status=404
+#   )
 
 @bp.route('/signUp', methods=['POST'])
 def signUp():
@@ -36,7 +36,7 @@ def signUp():
     user = User.query.filter_by(email=email).first()
     if user:
       return jsonify(
-        message='이미 유효한 이메일 정보가 있습니다.', 
+        message='이미 등록된 이메일 입니다.', 
         category='error',
         status=404
       )
@@ -79,7 +79,6 @@ def signUp():
 @bp.route('/signIn', methods=['POST'])
 def login():
   if request.method == 'POST':
-    print('로그인 실행됨')
         
     json_data = request.get_json()
     email = json_data['email']
@@ -95,14 +94,16 @@ def login():
           status=200
         )
       else:
+        # 패스워드가 일치하지 않음
         return jsonify(
-          message='로그인 정보가 일치하지 않습니다.',
+          message='일치하는 정보가 없습니다.',
           category='error',
           status=404
         )
     else:
+      # user db 에 일치하는 이메일이 없음
       return jsonify(
-        message='로그인 정보가 일치하지 않습니다.',
+        message='일치하는 정보가 없습니다.',
         category='error',
         status=404
       )  

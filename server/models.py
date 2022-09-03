@@ -12,7 +12,10 @@ class User(db.Model, UserMixin):
   email = db.Column(db.String(345), unique=True, nullable=False)
   brand_name = db.Column(db.String(50), nullable=False)
   password = db.Column(db.String(255), nullable=False)
+  
   menus = db.relationship('Menu')
+  menu_list = db.relationship('Menu_list')
+  menu_categorys = db.relationship('menu_categorys')
 
 class Menu(db.Model, UserMixin):
   id = db.Column(db.Integer, primary_key=True)
@@ -20,7 +23,12 @@ class Menu(db.Model, UserMixin):
   price = db.Column(db.Integer, nullable=False)
   img_url = db.Column(db.String(400), nullable=False)
   description = db.Column(db.String(800))
+  
   user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+  
+  menu_list = db.relationship('Menu_list')
+  menu_categorys = db.relationship('Menu_categorys')
+  
   
 # menu_item = Menu_items(name="김치치즈탕수육", price="22000", description="", img_url="../image_list/리얼안심탕수육_-김치치즈탕수육_1080x640.jpg", )
 
@@ -31,10 +39,15 @@ class Menu(db.Model, UserMixin):
 class Menu_list():
   id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String(45), nullable=False, unique=True)
+  
+  menu_id = db.Column(db.Integer, db.ForeignKey('menu.id'))
+  user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-
-class Category_list():
+class Menu_categorys():
   id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String(45), nullable=False, unique=True)
+  
+  menu_id = db.Column(db.Integer, db.ForeignKey('menu.id'))
+  user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
   
