@@ -70,6 +70,50 @@ const Admin = () => {
       })
   };
 
+  const [list, setList] = useState({
+    name: '',
+    description: ''
+  })
+  
+  const listhandleChange = (e) => {
+    setList({
+        ...list,
+        [e.target.name] : e.target.value
+      });
+  };
+  const addList = (e) => {
+    e.preventDefault();
+    axios.post("/menu/add_list", list)
+      .then((res)=> {
+        console.log(res)
+        if(res.data.status === 200){
+          toast.success(res.data.message, {
+            position: "top-center",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+          });
+        }
+        if(res.data.status === 404){
+          toast.error(res.data.message,{
+            position: "top-center",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+          })
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  };
+
   return (
     <div>
       <div className="main_base">
@@ -103,7 +147,20 @@ const Admin = () => {
                 style={{ margin: "auto" }}
               />
             )}
-          <h2>메뉴 리스트</h2>
+          <h2>리스트 추가</h2>
+          <form onSubmit={addList}>
+          <label>리스트명</label>
+          <input type="text" name="name"
+              value={list.name} onChange={listhandleChange} required
+              placeholder="추천메뉴"
+            />
+            <label>설명</label>
+            <input type="textarea" name="description"
+                value={list.description} onChange={listhandleChange}
+                placeholder=""
+              />
+            <button type="submit">리스트 추가</button>
+          </form>
           
         </div>
       </div>
