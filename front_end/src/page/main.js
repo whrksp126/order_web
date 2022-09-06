@@ -47,13 +47,13 @@ const Main = () => {
               </div>
 
               <div>
-                <div >
+                <div>
                   <div onClick={()=>{navigate("/admin")}}>영업관리</div>
                 </div>
-                <div >
+                <div>
                   <div>매출관리</div>
                 </div>
-                <div >
+                <div>
                   <div>환경설정</div>
                 </div>
               </div>
