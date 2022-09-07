@@ -26,6 +26,9 @@ class Menu(db.Model, UserMixin):
   
   user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
   
+  r_menu_list = db.relationship('R_menu_list')  
+
+  
 # menu_item = Menu_items(name="김치치즈탕수육", price="22000", description="", img_url="../image_list/리얼안심탕수육_-김치치즈탕수육_1080x640.jpg", )
 
 # db_session.add(menu_item)
@@ -38,6 +41,8 @@ class Menu_list(db.Model, UserMixin):
   description = db.Column(db.String(800))
 
   user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+  
+  r_menu_list = db.relationship('R_menu_list')  
 
 class Menu_categorys(db.Model, UserMixin):
   id = db.Column(db.Integer, primary_key=True)
@@ -45,5 +50,10 @@ class Menu_categorys(db.Model, UserMixin):
   description = db.Column(db.String(800))
   
   user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+class R_menu_list(db.Model, UserMixin):
+  id = db.Column(db.Integer, primary_key=True)
+  list_id = db.Column(db.Integer, db.ForeignKey('menu_list.id'))
+  menu_id = db.Column(db.Integer, db.ForeignKey('menu.id'))
 
   

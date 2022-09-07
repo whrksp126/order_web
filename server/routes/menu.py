@@ -19,6 +19,9 @@ def add():
     price = int(json_data['price'])
     img_url = json_data['img_url']
     description = json_data['description']
+    menu_list = json_data['menu_list']
+    if menu_list == 0:
+      menu_list == None;
     
     if len(name) > 80:
       return jsonify(
@@ -54,6 +57,7 @@ def add():
       )
       db.session.add(new_menu)
       db.session.commit()
+      menu_id = new_menu.id
       db.session.close()
       
       return jsonify(
@@ -104,3 +108,55 @@ def add_list():
       )
     except Exception as e:
       print(e)
+
+
+@bp.route('/read_list', methods=['POST'])
+@login_required
+def read_list():
+  if request.method == 'POST':
+    new_menu_list = Menu_list.query.filter_by(user_id=current_user.id).all()
+    menu_list = [];
+    for list in new_menu_list:
+      menu_list.append({"name": list.name,"id": list.id})
+    if menu_list:
+      return jsonify(
+        message='메뉴 리스트를 불러왔습니다.',
+        category='success',
+        data=menu_list,
+        status=200
+      )
+    else:
+      return jsonify(
+        message='저장된 메뉴 리스트가 없습니다.',
+        category='error',
+        status=404
+      )
+  return jsonify()
+
+# @bp.route('/add_r_menu_list', methods=['POST'])
+# @login_required
+# def read_list():
+#   if request.method == 'POST':
+    
+#     json_data = request.get_json()
+#     name = json_data['name']
+    
+#     new_menu_list = Menu_list.query.filter_by(user_id=current_user.id).all()
+#     menu_list = [];
+#     for list in new_menu_list:
+#       menu_list.append({"name": list.name,"id": list.id})
+#     if menu_list:
+#       return jsonify(
+#         message='메뉴 리스트를 불러왔습니다.',
+#         category='success',
+#         data=menu_list,
+#         status=200
+#       )
+#     else:
+#       return jsonify(
+#         message='저장된 메뉴 리스트가 없습니다.',
+#         category='error',
+#         status=404
+#       )
+#   return jsonify()
+    

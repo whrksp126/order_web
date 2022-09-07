@@ -10,7 +10,8 @@ const Admin = () => {
     name: '',
     price: '',
     img_url: '',
-    description: ''
+    description: '',
+    menu_list: ''
   })
   const [previewImg, setPreviewImg] = useState(null)
 
@@ -70,10 +71,7 @@ const Admin = () => {
       })
   };
 
-  const [list, setList] = useState({
-    name: '',
-    description: ''
-  })
+  const [list, setList] = useState({name: '',description: ''})
   
   const listhandleChange = (e) => {
     setList({
@@ -114,6 +112,35 @@ const Admin = () => {
       })
   };
 
+  const [menuList, setMenuList] = useState(null)
+  const readList = (e) => {
+    axios.post("/menu/read_list")
+      .then((res)=> {
+        if(res.data.status === 200){
+          setMenuList(res.data.data)
+        }
+        if(res.data.status === 404){
+          toast.error(res.data.message,{
+            position: "top-center",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+          })
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  };
+
+  useEffect(()=> {
+    readList()
+  },[])
+
+
   return (
     <div>
       <div className="main_base">
@@ -137,8 +164,19 @@ const Admin = () => {
             <input type="textarea" name='description' value={menu.description} onChange={menuhandleChange}
               placeholder="" />
             
+            {menuList && <><label>리스트</label>
+            <select defaultValue='0' name="menu_list" onChange={menuhandleChange}>
+                <option value="0">리스트를 선택하세요.</option>
+              { menuList.map((list, index) => (
+                <option key={index} value={list.id}>{list.name}</option>)
+              )}
+            </select></>}
             <button type="submit">메뉴 추가</button>
           </form>
+
+
+
+
           {previewImg && (
               <img
                 alt={menu.img_url}
