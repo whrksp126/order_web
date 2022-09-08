@@ -162,8 +162,7 @@ const Admin = () => {
 
             <label>설명</label>
             <input type="textarea" name='description' value={menu.description} onChange={menuhandleChange}
-              placeholder="" />
-            
+              placeholder=""/>
             {menuList && <><label>리스트</label>
             <select defaultValue='0' name="menu_list" onChange={menuhandleChange}>
                 <option value="0">리스트를 선택하세요.</option>
