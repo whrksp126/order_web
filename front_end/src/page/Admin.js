@@ -136,9 +136,35 @@ const Admin = () => {
       })
   };
 
+  const [callMenu, setCallMenu] = useState(null)
+  const call_admin_page = (e) => {
+    axios.post("/menu/call_admin_page").then((res)=> {
+      if(res.data.status === 200){
+        setCallMenu(res.data.data)
+      }
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+
+  }
+
   useEffect(()=> {
     readList()
+    call_admin_page()
   },[])
+
+  const editMenu = (menu) => {
+    console.log(menu)
+    console.log(document.getElementsByName('menu_list'))
+    setMenu({
+      name: menu.name,
+      price: menu.price,
+      img_url: menu.img_url,
+      description: menu.description,
+      menu_list: menu.list_id
+    });
+  }
 
 
   return (
@@ -172,18 +198,44 @@ const Admin = () => {
             </select></>}
             <button type="submit">메뉴 추가</button>
           </form>
-
-
-
-
           {previewImg && (
-              <img
-                alt={menu.img_url}
-                src={previewImg}
-                accept="image/*"
-                style={{ margin: "auto" }}
-              />
-            )}
+          <img
+            alt={menu.img_url}
+            src={previewImg}
+            accept="image/*"
+            style={{ margin: "auto" }}
+          />
+          )}
+          <h2>모든 메뉴</h2>
+          {callMenu && <>
+            <table>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>메뉴명</th>
+                  <th>가격</th>
+                  <th>리스트명</th>
+                  <th>추가기능</th>
+                </tr>
+              </thead>
+              <tbody>
+                {callMenu.map((menu, index) => (
+                <tr key={index}>
+                  <th>{index+1}</th>
+                  <td>{menu.name}</td>
+                  <td>{menu.price}원</td>
+                  <td>{menu.list_type ? menu.list_type : '--'}</td>
+                  <td>
+                    <button onClick={()=>{editMenu(menu)}}>
+                      수정
+                    </button>
+                  </td>
+                </tr>
+                ))}
+              </tbody>
+            </table>
+          </>}
+
           <h2>리스트 추가</h2>
           <form onSubmit={addList}>
           <label>리스트명</label>
@@ -198,6 +250,7 @@ const Admin = () => {
               />
             <button type="submit">리스트 추가</button>
           </form>
+          <h2>모든 리스트</h2>
           
         </div>
       </div>
