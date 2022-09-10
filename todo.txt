@@ -72,5 +72,14 @@
 
     4. MYSQL DB 연결
 
+    5. set mapping_table
+
+    6. mapping_table join 호출하기
+
+      > sql join <
+      SELECT menu.id, menu.name, price, menu_list.name, menu_list.id as list_id
+      FROM r_menu_list
+      LEFT JOIN menu ON menu.id = r_menu_list.menu_id
+      LEFT JOIN menu_list ON menu_list.id = r_menu_list.list_id 
     
     

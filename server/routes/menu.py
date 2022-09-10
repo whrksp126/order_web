@@ -47,10 +47,11 @@ def add():
       category='error',
       status=404
     )   
-    menu_id = add_menu(name, price, img_url, description, current_user.id)
+    user_id = current_user.id
+    menu_id = add_menu(name, price, img_url, description, user_id)
 
     if menu_list != None:
-      r_menu_list(menu_id, menu_list)
+      r_menu_list(menu_id, menu_list, user_id)
     return jsonify(
       message='메뉴를 추가하였습니다.',
       category='success',
@@ -81,15 +82,15 @@ def add_menu(name, price, img_url, description, user_id):
 def call_admin_page():
   menus = call_menu(current_user.id)
   menu_lists = call_menu_list(current_user.id)
-  r_menu_list = call_r_menu_list()
+  r_menu_list = call_r_menu_list(current_user.id)
 
-  for item in r_menu_list:
-    for menu in menus:
-      if item['menu_id'] == menu['id']:
+  # for item in r_menu_list:
+  #   for menu in menus:
+  #     if item['menu_id'] == menu['id']:
         
-        for menu_list in menu_lists:
-          menu['list_type'] = menu_list['name']
-          menu['list_id'] = menu_list['id']
+  #       for menu_list in menu_lists:
+  #         menu['list_type'] = menu_list['name']
+  #         menu['list_id'] = menu_list['id']
 
   return jsonify(
       message='모든 메뉴를 불러왔습니다.',
@@ -100,16 +101,19 @@ def call_admin_page():
     
 def call_menu(user_id):
   try:
-    call_menu = Menu.query.filter_by(user_id=user_id).all()
-    menus=[]
-    for menu in call_menu:
-      menus.append({
-        "id": menu.id,
-        "name": menu.name,
-        "price": menu.price,
-        "img_url": menu.img_url,
-        "description": menu.description,
-      })
+    # call_menu = Menu.query.filter_by(user_id=user_id).all()
+    # menus=[]
+    # for menu in call_menu:
+    #   menus.append({
+    #     "id": menu.id,
+    #     "name": menu.name,
+    #     "price": menu.price,
+    #     "img_url": menu.img_url,
+    #     "description": menu.description,
+    #   })
+    print("#################################")
+    menus = R_menu_list.query.join(Menu)
+    print(menus)
     return menus
   except Exception as e:
     print(e)
@@ -128,9 +132,9 @@ def call_menu_list(user_id):
   except Exception as e:
     print(e)
 
-def call_r_menu_list():
+def call_r_menu_list(user_id):
   try:
-    call_menu_list = R_menu_list.query.all()
+    call_menu_list = R_menu_list.query.filter_by(user_id=user_id).all()
     r_menu_list=[]
     for item in call_menu_list:
       r_menu_list.append({
@@ -142,9 +146,9 @@ def call_r_menu_list():
     print(e)
 
 # 메뉴와 메뉴리스트 매핑 테이블
-def r_menu_list(menu_id, list_id):
+def r_menu_list(menu_id, list_id, user_id):
   try:
-    new_r_menu_list = R_menu_list(list_id=list_id, menu_id=menu_id)
+    new_r_menu_list = R_menu_list(list_id=list_id, menu_id=menu_id, user_id=user_id)
     db.session.add(new_r_menu_list)
     db.session.commit()
     db.session.close()
