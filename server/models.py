@@ -30,13 +30,6 @@ class Menu(db.Model, UserMixin):
   
   r_menu_list = db.relationship('R_menu_list')  
 
-  
-# menu_item = Menu_items(name="김치치즈탕수육", price="22000", description="", img_url="../image_list/리얼안심탕수육_-김치치즈탕수육_1080x640.jpg", )
-
-# db_session.add(menu_item)
-# db_session.commit()
-# db_session.close()  
-  
 class Menu_list(db.Model, UserMixin):
   id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String(45), nullable=False, unique=True)

@@ -18,9 +18,9 @@ app.config.from_object(ApplicationConfig)
 db = SQLAlchemy(app)
 db.init_app(app)
 
-from routes import auth, menu
+from routes import auth, admin
 app.register_blueprint(auth.bp)
-app.register_blueprint(menu.bp)
+app.register_blueprint(admin.bp)
 
 db.create_all()
 

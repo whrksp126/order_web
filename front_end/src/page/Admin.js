@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import "./Main.css"
 
 import { ToastContainer, toast } from 'react-toastify';
+import Select from 'react-select'
 
 const Admin = () => {
   const [menu, setMenu] = useState({
@@ -40,7 +41,7 @@ const Admin = () => {
   const addMenu = (e) => {
     e.preventDefault();
     console.log(menu)
-    axios.post("/menu/add", menu)
+    axios.post("/admin/add_menu", menu)
       .then((res)=> {
         console.log(res)
         if(res.data.status === 200){
@@ -81,7 +82,7 @@ const Admin = () => {
   };
   const addList = (e) => {
     e.preventDefault();
-    axios.post("/menu/add_list", list)
+    axios.post("/admin/add_list", list)
       .then((res)=> {
         console.log(res)
         if(res.data.status === 200){
@@ -112,12 +113,33 @@ const Admin = () => {
       })
   };
 
+  const [menusLists, setMenusLists] = useState(null)
   const [menuList, setMenuList] = useState(null)
-  const readList = (e) => {
-    axios.post("/menu/read_list")
+  const [menus, setMenus] = useState(null)
+
+
+  const [changeMenuList, setChangeMenuList] = useState(null)
+  let new_array = [];
+
+  const changeSelectList = (list_id) => {
+    if(menusLists !== null){
+      menusLists.forEach((item) => {
+        if(item.list_id === list_id){
+          new_array.push(item)
+        }
+      })
+      setChangeMenuList(new_array)
+    }
+  }
+
+  const call_all = (e) => {
+    axios.post("/admin/call_all")
       .then((res)=> {
         if(res.data.status === 200){
-          setMenuList(res.data.data)
+          setMenus(res.data.menu)
+          setMenuList(res.data.menu_list)
+          setMenusLists(res.data.menus_lists)
+
         }
         if(res.data.status === 404){
           toast.error(res.data.message,{
@@ -135,36 +157,34 @@ const Admin = () => {
         console.log(err)
       })
   };
-
-  const [callMenu, setCallMenu] = useState(null)
-  const call_admin_page = (e) => {
-    axios.post("/menu/call_admin_page").then((res)=> {
-      if(res.data.status === 200){
-        setCallMenu(res.data.data)
-      }
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-
-  }
-
   useEffect(()=> {
-    readList()
-    call_admin_page()
+    call_all()
   },[])
 
-  const editMenu = (menu) => {
-    console.log(menu)
-    console.log(document.getElementsByName('menu_list'))
-    setMenu({
-      name: menu.name,
-      price: menu.price,
-      img_url: menu.img_url,
-      description: menu.description,
-      menu_list: menu.list_id
-    });
+  useEffect(()=> {
+    if(menuList !== null){
+      changeSelectList(menuList[0].id)
+    }
+  },[menuList])
+
+  const editMenu = (menu_id) => {
+    menus.forEach((item, index) => {
+      if(item.id === menu_id){
+        setMenu({
+          name: item.name,
+          price: item.price,
+          img_url: item.img_url,
+          description: item.description,
+        })
+      }
+    })
   }
+
+  const options = [
+    { value: 'chocolate', label: 'Chocolate' },
+    { value: 'strawberry', label: 'Strawberry' },
+    { value: 'vanilla', label: 'Vanilla' }
+  ]
 
 
   return (
@@ -190,6 +210,7 @@ const Admin = () => {
             <input type="textarea" name='description' value={menu.description} onChange={menuhandleChange}
               placeholder=""/>
             {menuList && <><label>리스트</label>
+            <Select closeMenuOnSelect={false} isMulti options={options} />
             <select defaultValue='0' name="menu_list" onChange={menuhandleChange}>
                 <option value="0">리스트를 선택하세요.</option>
               { menuList.map((list, index) => (
@@ -207,30 +228,29 @@ const Admin = () => {
           />
           )}
           <h2>모든 메뉴</h2>
-          {callMenu && <>
+          {menus && <>
             <table>
               <thead>
                 <tr>
-                  <th></th>
                   <th>메뉴명</th>
                   <th>가격</th>
-                  <th>리스트명</th>
+                  <th>설명</th>
                   <th>추가기능</th>
                 </tr>
               </thead>
               <tbody>
-                {callMenu.map((menu, index) => (
-                <tr key={index}>
-                  <th>{index+1}</th>
-                  <td>{menu.name}</td>
-                  <td>{menu.price}원</td>
-                  <td>{menu.list_type ? menu.list_type : '--'}</td>
-                  <td>
-                    <button onClick={()=>{editMenu(menu)}}>
-                      수정
-                    </button>
-                  </td>
-                </tr>
+                {menus.map((menu, index) =>(
+                  <tr key={index}>
+                    <td>{menu.name}</td>
+                    <td>{menu.price}원</td>
+                    <td>{menu.description}</td>
+                    <td>
+                      <button 
+                      onClick={()=>editMenu(menu.id)}>
+                        수정
+                      </button>
+                    </td>
+                  </tr>
                 ))}
               </tbody>
             </table>
@@ -250,7 +270,40 @@ const Admin = () => {
               />
             <button type="submit">리스트 추가</button>
           </form>
-          <h2>모든 리스트</h2>
+          {menuList && 
+          <>
+            <h2>모든 리스트</h2>{
+            menuList.map((list,index) => (
+              <button onClick={()=>{changeSelectList(list.id)}} 
+                key={list.id}
+              >
+                {list.name}
+              </button>
+            ))}
+            {
+              changeMenuList && 
+              <>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>이름</th>
+                      <th>가격</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {changeMenuList.map((list,index) =>(
+                    <tr key={index}>
+                      <td>{list.name}</td>
+                      <td>{list.price}</td>
+                    </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </>
+            }
+          </>
+          }
+
           
         </div>
       </div>

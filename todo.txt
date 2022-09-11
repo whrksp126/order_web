@@ -81,5 +81,14 @@
       FROM r_menu_list
       LEFT JOIN menu ON menu.id = r_menu_list.menu_id
       LEFT JOIN menu_list ON menu_list.id = r_menu_list.list_id 
-    
+      
+      > orm join <
+      results = db.session\
+      .query(Menu, R_menu_list, Menu_list)\
+      .select_from(Menu)\
+      .join(R_menu_list)\
+      .join(Menu_list)\
+      .all()
+      for menu, r_menu_list, menu_list in results:
+        print(menu.id, menu.name, menu.price, menu_list.id, menu_list.name)
     
