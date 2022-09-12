@@ -32,7 +32,7 @@ class Menu(db.Model, UserMixin):
 
 class Menu_list(db.Model, UserMixin):
   id = db.Column(db.Integer, primary_key=True)
-  name = db.Column(db.String(45), nullable=False, unique=True)
+  name = db.Column(db.String(45), nullable=False)
   description = db.Column(db.String(800))
 
   user_id = db.Column(db.Integer, db.ForeignKey('user.id'))

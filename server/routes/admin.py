@@ -4,8 +4,9 @@ from unicodedata import category
 from flask import request, jsonify, Blueprint
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, current_user, logout_user, login_required
-from menu.fun_menu import fun_call_all_menus, fun_call_menu, fun_call_all_menus, fun_add_r_menu_list, fun_add_menu_list, fun_call_all_menu_list
-
+from menu.fun_menu import fun_call_all_menus, fun_call_menu, \
+  fun_call_all_menus, fun_add_r_menu_list, fun_add_menu_list, \
+  fun_call_all_menu_list, fun_add_menu
 from . import *
 bp = Blueprint("admin", __name__, url_prefix="/admin")
 
@@ -22,7 +23,8 @@ def add_menu():
     img_url = json_data['img_url']
     description = json_data['description']
     menu_list = json_data['menu_list']
-    if menu_list == 0:
+    
+    if len(menu_list) == 0:
       menu_list == None;
     
     if len(name) > 80:
@@ -53,7 +55,9 @@ def add_menu():
     menu_id = fun_add_menu(name, price, img_url, description, user_id)
 
     if menu_list != None:
-      fun_add_r_menu_list(menu_id, menu_list, user_id)
+      for list in menu_list:
+        fun_add_r_menu_list(menu_id, list, user_id)
+    
     return jsonify(
       message='메뉴를 추가하였습니다.',
       category='success',
@@ -70,7 +74,6 @@ def add_list():
     json_data = request.get_json()
     name = json_data['name']
     description = json_data['description']
-    
     if len(name) > 80:
       return jsonify(
       message='리스트명은 80자 미만입니다.', 
@@ -83,6 +86,8 @@ def add_list():
       category='error',
       status=404
     )   
+    
+    print(name, description, user_id)
     fun_add_menu_list(name, description, user_id)
     
     return jsonify(

@@ -25,8 +25,10 @@ def fun_add_menu(name, price, img_url, description, user_id):
 def fun_add_menu_list(name, description, user_id):
   try:
     menu_list = Menu_list(name=name, description=description, user_id=user_id)
+    print('#############################')
+    print(name, description, user_id)
     db.session.add(menu_list)
-    db.session.commit
+    db.session.commit()
     db.session.close()
   except Exception as e:
     print("eeeeee fun_add_menu_list eeeeee", e)
