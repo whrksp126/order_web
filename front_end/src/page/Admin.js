@@ -4,7 +4,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import "./Main.css"
 
 import { ToastContainer, toast } from 'react-toastify';
-import Select from 'react-select'
+
+import 'antd/dist/antd.css';
+import { Select } from 'antd';
+
 
 const Admin = () => {
   const [menu, setMenu] = useState({
@@ -160,12 +163,12 @@ const Admin = () => {
   useEffect(()=> {
     call_all()
   },[])
-
+  
   useEffect(()=> {
     if(menuList !== null){
       changeSelectList(menuList[0].id)
     }
-  },[menuList])
+  }, [menuList])
 
   const editMenu = (menu_id) => {
     menus.forEach((item, index) => {
@@ -180,13 +183,10 @@ const Admin = () => {
     })
   }
 
-  const options = [
-    { value: 'chocolate', label: 'Chocolate' },
-    { value: 'strawberry', label: 'Strawberry' },
-    { value: 'vanilla', label: 'Vanilla' }
-  ]
-
-
+  const { Option } = Select;
+  const handleChange = (value) => {
+    console.log(`selected ${value}`);
+  };
   return (
     <div>
       <div className="main_base">
@@ -209,14 +209,38 @@ const Admin = () => {
             <label>설명</label>
             <input type="textarea" name='description' value={menu.description} onChange={menuhandleChange}
               placeholder=""/>
-            {menuList && <><label>리스트</label>
-            <Select closeMenuOnSelect={false} isMulti options={options} />
-            <select defaultValue='0' name="menu_list" onChange={menuhandleChange}>
-                <option value="0">리스트를 선택하세요.</option>
-              { menuList.map((list, index) => (
-                <option key={index} value={list.id}>{list.name}</option>)
-              )}
-            </select></>}
+            {menuList && 
+            <>
+              <label>리스트</label>    
+              <Select
+                mode="multiple"
+                style={{
+                  width: '100%',
+                }}
+                placeholder="리스트를 선택해 주세요"
+                defaultValue={['추천메뉴:1','식사류:2']}
+                onChange={handleChange}
+                optionLabelProp="label"
+              >
+                { 
+                  menuList.map((list, index) => (
+                    <Option value={`${list.name}:${list.id}`} key={index}  label={list.name}>
+                      <div className="demo-option-label-item">
+                        <span role="img" aria-label={list.name}>
+                        </span>
+                        {list.name}
+                      </div>
+                    </Option>
+                  ))
+                }
+              </Select>
+              {/* <select multiple defaultValue='0' name="menu_list" onChange={menuhandleChange}>
+                  <option value="0">리스트를 선택하세요.</option>
+                { menuList.map((list, index) => (
+                  <option key={index} value={list.id}>{list.name}</option>)
+                )}
+              </select> */}
+            </>}
             <button type="submit">메뉴 추가</button>
           </form>
           {previewImg && (
