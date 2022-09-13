@@ -2,7 +2,10 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 
 import { ToastContainer, toast } from 'react-toastify';
-import { Select } from 'antd';
+import { InputNumber, Select, Upload } from 'antd';
+import { Button, Checkbox, Form, Input } from 'antd';
+import { Radio } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 
 const AdminAddMenu = (props) => {
   
@@ -91,24 +94,67 @@ const AdminAddMenu = (props) => {
     })
   }
 
+  const [form] = Form.useForm();
+  const [formLayout, setFormLayout] = useState('horizontal');
+
+  const onFormLayoutChange = ({ layout }) => {
+    setFormLayout(layout);
+  };
+
+  const formItemLayout =
+    formLayout === 'horizontal'
+      ? {
+          labelCol: {
+            span: 4,
+          },
+          wrapperCol: {
+            span: 14,
+          },
+        }
+      : null;
+  const buttonItemLayout =
+    formLayout === 'horizontal'
+      ? {
+          wrapperCol: {
+            span: 14,
+            offset: 4,
+          },
+        }
+      : null;
+
+    const { TextArea } = Input;
+
   return (
     <>
-      <h2>메뉴 추가</h2>
-      <form className="" onSubmit={submit_AddMenu}>
-        <label>메뉴명</label>
-        <input type="text" name="name"
-          value={input_Menu.name} onChange={handleChangeInput_Menu} required
-          placeholder="짜장면"
-        />
-        <label>가격</label>
-        <input type="number" name='price' value={input_Menu.price} onChange={handleChangeInput_Menu} required placeholder="39900" />
-        <label>이미지</label>
-        <input type="file" name='img_url' onChange={handleChangeInput_MenuImgUrl} required placeholder="" />
-        <label>설명</label>
-        <input type="textarea" name='description' value={input_Menu.description} onChange={handleChangeInput_Menu} placeholder=""/>
-        {props.menuList && 
+      <Form
+      {...formItemLayout}
+      layout='horizontal'
+      form={form}
+      initialValues={{
+        layout: formLayout,
+      }}
+      onValuesChange={onFormLayoutChange}
+    >
+      <Form.Item label="메뉴명">
+        <Input placeholder="input placeholder" />
+      </Form.Item>
+      <Form.Item label="가격">
+        <InputNumber />
+      </Form.Item>    
+      <Form.Item label="이미지" valuePropName="fileList">
+        <Upload action="/upload.do" listType="picture-card">
+          <div>
+            <PlusOutlined />
+            <div style={{ marginTop: 8 }}>Upload</div>
+          </div>
+        </Upload>
+      </Form.Item>
+      <Form.Item label="설명">
+        <TextArea rows={4} />
+      </Form.Item>
+      {props.menuList && 
         <>
-          <label>리스트</label>    
+          <Form.Item label="리스트">
           <Select
             mode="multiple"
             style={{
@@ -132,7 +178,29 @@ const AdminAddMenu = (props) => {
               ))
             }
           </Select>
-        </>}
+          </Form.Item>
+        </>
+      }
+      <Form.Item {...buttonItemLayout}>
+        <Button type="primary">메뉴 추가</Button>
+      </Form.Item>
+    </Form>
+
+
+      <h2>메뉴 추가</h2>
+      <form className="" onSubmit={submit_AddMenu}>
+        <label>메뉴명</label>
+        <input type="text" name="name"
+          value={input_Menu.name} onChange={handleChangeInput_Menu} required
+          placeholder="짜장면"
+        />
+        <label>가격</label>
+        <input type="number" name='price' value={input_Menu.price} onChange={handleChangeInput_Menu} required placeholder="39900" />
+        <label>이미지</label>
+        <input type="file" name='img_url' onChange={handleChangeInput_MenuImgUrl} required placeholder="" />
+        <label>설명</label>
+        <input type="textarea" name='description' value={input_Menu.description} onChange={handleChangeInput_Menu} placeholder=""/>
+        
         <button type="submit">메뉴 추가</button>
       </form>
       {input_MenuPreviewImg && (
