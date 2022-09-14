@@ -12,8 +12,14 @@ import AdminAddMenuList from '../component/AdminAddMenuList';
 import AdminAllMenuList from '../component/AdminAllMenuList';
 
 
-const Admin = () => {
+import { UploadOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
+import { Layout, Menu } from 'antd';
 
+const Admin = () => {
+  
+  const { Header, Footer, Sider, Content } = Layout;
+
+  
   const [menusLists, setMenusLists] = useState(null)
   const [menuList, setMenuList] = useState(null)
   const [menus, setMenus] = useState(null)
@@ -70,16 +76,41 @@ const Admin = () => {
   }, [menuList])
 
   return (
-    <div>
-      <div className="main_base">
-        <div className="main_container">
-          <h1>메뉴 관리</h1>
-          <AdminAddMenu menuList={menuList} />
-          <AdminAllMenu menus={menus} />
-          <AdminAddMenuList />
-          <AdminAllMenuList menuList={menuList} menusLists={menusLists}changeSelectList={changeSelectList} changeMenuList={changeMenuList} />
-        </div>
-      </div>
+    <div >
+      <Layout style={{width:"100vw", height:"100vh"}}>
+        <Sider
+          theme='light'
+          breakpoint="lg"
+          collapsedWidth="0"
+          onBreakpoint={(broken) => {
+            console.log(broken);
+          }}
+          onCollapse={(collapsed, type) => {
+            console.log(collapsed, type);
+          }}
+        >
+          <Menu mode="inline" defaultSelectedKeys={['1']} >
+            <Menu.Item key={0}>홈으로</Menu.Item>
+            <Menu.Item key={1}>메뉴 추가</Menu.Item>
+            <Menu.Item key={2}>메뉴 보기</Menu.Item>
+            <Menu.Item key={3}>리스트 추가</Menu.Item>
+            <Menu.Item key={4}>카테고리 추가</Menu.Item>
+            <Menu.Item key={5}>카테고리 보기</Menu.Item>
+          </Menu>
+        </Sider>
+        <Layout>
+          <Header style={{ padding: 0, background: "#FFFFFF" }} />
+          <Content style={{margin: '24px 16px 0',}}> 
+            <AdminAddMenu menuList={menuList} />
+            {/* <AdminAllMenu menus={menus} /> */}
+            {/* <AdminAddMenuList /> */}
+            {/* <AdminAllMenuList menuList={menuList} menusLists={menusLists}changeSelectList={changeSelectList} changeMenuList={changeMenuList} /> */}
+          </Content>
+          <Footer style={{ textAlign: 'center', }}> Web RMS ©2022 Created by GH_STUDIO </Footer>
+        </Layout>
+      </Layout>
+      
+
       <ToastContainer position="top-center"
         autoClose={5000}
         hideProgressBar={false}
