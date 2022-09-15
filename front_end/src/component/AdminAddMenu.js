@@ -6,6 +6,7 @@ import { Col, InputNumber, Row, Select, Upload } from 'antd';
 import { Button, Checkbox, Form, Input } from 'antd';
 import { Radio } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import ImgCrop from 'antd-img-crop';
 
 const AdminAddMenu = (props) => {
   
@@ -103,6 +104,33 @@ const AdminAddMenu = (props) => {
 
     const { TextArea } = Input;
 
+    const [fileList, setFileList] = useState([
+      
+    ]);
+
+    const onChange = ({ fileList: newFileList }) => {
+      setFileList(newFileList);
+    };
+  
+    const onPreview = async (file) => {
+      let src = file.url;
+  
+      if (!src) {
+        src = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file.originFileObj);
+  
+          reader.onload = () => resolve(reader.result);
+        });
+      }
+  
+      const image = new Image();
+      image.src = src;
+      const imgWindow = window.open(src);
+      imgWindow?.document.write(image.outerHTML);
+    };
+  
+
   return (
     <>      
       <h2>메뉴 추가</h2>
@@ -125,12 +153,17 @@ const AdminAddMenu = (props) => {
       }}/>
       </Form.Item>    
       <Form.Item label="이미지" valuePropName="fileList">
-        <Upload.Dragger action="/upload.do" listType="picture-card">
-          <div>
-            <PlusOutlined />
-            <div style={{ marginTop: 8 }}>Upload</div>
-          </div>
-        </Upload.Dragger>
+        <ImgCrop rotate>
+          <Upload
+            action=""
+            listType="picture-card"
+            fileList={fileList}
+            onChange={onChange}
+            onPreview={onPreview}
+          >
+            {fileList.length < 1 && '+ Upload'}
+          </Upload>
+        </ImgCrop>
       </Form.Item>
       <Form.Item label="설명">
         <TextArea rows={2} />
@@ -145,7 +178,6 @@ const AdminAddMenu = (props) => {
             }}
             name="menu_list"
             placeholder="리스트를 선택해 주세요"
-            // defaultValue={['추천메뉴:1','식사류:2']}
             onChange={handleChangeInput_MenuList}
             optionLabelProp="label"
           >
@@ -169,7 +201,6 @@ const AdminAddMenu = (props) => {
           <Button block  type="primary" >
             메뉴 추가
           </Button>
-        
         </Col>
       </Row>
     </Form>
