@@ -12,8 +12,8 @@ import AdminAddMenuList from '../component/AdminAddMenuList';
 import AdminAllMenuList from '../component/AdminAllMenuList';
 
 
-import { UploadOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
-import { Layout, Menu } from 'antd';
+// import { UploadOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
+import { Col, Layout, Menu, Row } from 'antd';
 
 const Admin = () => {
   
@@ -83,10 +83,10 @@ const Admin = () => {
           breakpoint="lg"
           collapsedWidth="0"
           onBreakpoint={(broken) => {
-            console.log(broken);
+            // console.log(broken);
           }}
           onCollapse={(collapsed, type) => {
-            console.log(collapsed, type);
+            // console.log(collapsed, type);
           }}
         >
           <Menu mode="inline" defaultSelectedKeys={['1']} >
@@ -101,8 +101,14 @@ const Admin = () => {
         <Layout>
           <Header style={{ padding: 0, background: "#FFFFFF" }} />
           <Content style={{margin: '24px 16px 0',}}> 
-            <AdminAddMenu menuList={menuList} />
-            {/* <AdminAllMenu menus={menus} /> */}
+            <Row>
+              <Col span={8}>
+                <AdminAddMenu menuList={menuList} />
+              </Col>
+              <Col span={16}>
+                <AdminAllMenu menusLists={menusLists} />
+              </Col>
+            </Row>
             {/* <AdminAddMenuList /> */}
             {/* <AdminAllMenuList menuList={menuList} menusLists={menusLists}changeSelectList={changeSelectList} changeMenuList={changeMenuList} /> */}
           </Content>

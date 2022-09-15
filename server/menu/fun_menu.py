@@ -54,16 +54,31 @@ def fun_call_all_menus(user_id):
       .join(Menu_list)\
       .filter(Menu.user_id == user_id)\
       .all()
-    
+    has_menu = [];
+    new_menu_list = []
     for menu, r_menu_list, menu_list in all_menus:
-      menus.append({
-        "id": menu.id,
-        "name": menu.name,
-        "price": menu.price,
-        "description": menu.description,
-        "list_id": menu_list.id,
-        "list_name": menu_list.name
-      })
+      if not menu.id in has_menu:
+        # 데이터 없으면
+        has_menu.append(menu.id)
+        new_menu_list.append({
+          "list_id": menu_list.id,
+          "list_name": menu_list.name
+        })
+        menus.append({
+          "id": menu.id,
+          "name": menu.name,
+          "price": menu.price,
+          "img_url": menu.img_url,
+          "description": menu.description,
+          "menu_list": new_menu_list
+        })
+      else:
+        # 데이터 있으면
+        [x for x in menus if x['id'] == menu.id][0]['menu_list'].append({
+          "list_id": menu_list.id,
+          "list_name": menu_list.name
+        })
+      new_menu_list = []
     return menus
   except Exception as e:
     print("eeeeee all_menus eeeeee,", e)

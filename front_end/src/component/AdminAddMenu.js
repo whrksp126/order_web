@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 
 import { ToastContainer, toast } from 'react-toastify';
-import { InputNumber, Select, Upload } from 'antd';
+import { Col, InputNumber, Row, Select, Upload } from 'antd';
 import { Button, Checkbox, Form, Input } from 'antd';
 import { Radio } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
@@ -101,33 +101,14 @@ const AdminAddMenu = (props) => {
     setFormLayout(layout);
   };
 
-  const formItemLayout =
-    formLayout === 'horizontal'
-      ? {
-          labelCol: {
-            span: 4,
-          },
-          wrapperCol: {
-            span: 14,
-          },
-        }
-      : null;
-  const buttonItemLayout =
-    formLayout === 'horizontal'
-      ? {
-          wrapperCol: {
-            span: 14,
-            offset: 4,
-          },
-        }
-      : null;
-
     const { TextArea } = Input;
 
   return (
-    <>
+    <>      
+      <h2>메뉴 추가</h2>
       <Form
-      {...formItemLayout}
+      labelCol={{ span: 4 }}
+      wrapperCol={{ span: 20 }}
       layout='horizontal'
       form={form}
       initialValues={{
@@ -138,19 +119,21 @@ const AdminAddMenu = (props) => {
       <Form.Item label="메뉴명">
         <Input placeholder="input placeholder" />
       </Form.Item>
-      <Form.Item label="가격">
-        <InputNumber />
+      <Form.Item label="가격" >
+        <InputNumber  style={{
+        width: '100%',
+      }}/>
       </Form.Item>    
       <Form.Item label="이미지" valuePropName="fileList">
-        <Upload action="/upload.do" listType="picture-card">
+        <Upload.Dragger action="/upload.do" listType="picture-card">
           <div>
             <PlusOutlined />
             <div style={{ marginTop: 8 }}>Upload</div>
           </div>
-        </Upload>
+        </Upload.Dragger>
       </Form.Item>
       <Form.Item label="설명">
-        <TextArea rows={4} />
+        <TextArea rows={2} />
       </Form.Item>
       {props.menuList && 
         <>
@@ -181,13 +164,17 @@ const AdminAddMenu = (props) => {
           </Form.Item>
         </>
       }
-      <Form.Item {...buttonItemLayout}>
-        <Button type="primary">메뉴 추가</Button>
-      </Form.Item>
+      <Row>
+        <Col span={4} offset={20}>
+          <Button block  type="primary" >
+            메뉴 추가
+          </Button>
+        
+        </Col>
+      </Row>
     </Form>
 
-
-      <h2>메뉴 추가</h2>
+      {/* 
       <form className="" onSubmit={submit_AddMenu}>
         <label>메뉴명</label>
         <input type="text" name="name"
@@ -210,7 +197,8 @@ const AdminAddMenu = (props) => {
         accept="image/*"
         style={{ margin: "auto" }}
       />
-      )}
+      )} 
+      */}
     </>
   )
 }
