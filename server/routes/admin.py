@@ -23,7 +23,7 @@ def add_menu():
     img_url = json_data['img_url']
     description = json_data['description']
     menu_list = json_data['menu_list']
-    
+      
     if len(menu_list) == 0:
       menu_list == None;
     
@@ -53,11 +53,10 @@ def add_menu():
     )
       
     menu_id = fun_add_menu(name, price, img_url, description, user_id)
-
     if menu_list != None:
       for list in menu_list:
-        fun_add_r_menu_list(menu_id, list, user_id)
-    
+        list_id = int(list.split(':')[1])
+        fun_add_r_menu_list(menu_id, list_id, user_id)
     return jsonify(
       message='메뉴를 추가하였습니다.',
       category='success',
