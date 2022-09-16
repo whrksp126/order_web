@@ -100,6 +100,7 @@ const AdminAddMenu = (props) => {
 
   const onFormLayoutChange = ({ layout }) => {
     setFormLayout(layout);
+    console.log(layout)
   };
 
     const { TextArea } = Input;
@@ -112,24 +113,37 @@ const AdminAddMenu = (props) => {
       setFileList(newFileList);
     };
   
-    const onPreview = async (file) => {
-      let src = file.url;
+    // const onPreview = async (file) => {
+    //   let src = file.url;
+    //   if (!src) {
+    //     src = await new Promise((resolve) => {
+    //       const reader = new FileReader();
+    //       reader.readAsDataURL(file.originFileObj);
+
+    //       reader.onload = () => resolve(reader.result);
+    //     });
+    //   }
   
-      if (!src) {
-        src = await new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.readAsDataURL(file.originFileObj);
-  
-          reader.onload = () => resolve(reader.result);
-        });
+    //   const image = new Image();
+    //   image.src = src;
+    //   const imgWindow = window.open(src);
+    //   imgWindow?.document.write(image.outerHTML);
+    // };
+    const onFinish = (values) => {
+      console.log('values', values)
+    }
+    
+    const normFile = (e) => {
+      console.log('Upload event:', e);
+      if (Array.isArray(e)) {
+        return e;
       }
-  
-      const image = new Image();
-      image.src = src;
-      const imgWindow = window.open(src);
-      imgWindow?.document.write(image.outerHTML);
+      return e && e.fileList;
     };
-  
+
+    const beforeUpload = ({fileList}) => {
+        return  false;
+    }
 
   return (
     <>      
@@ -140,37 +154,35 @@ const AdminAddMenu = (props) => {
       layout='horizontal'
       form={form}
       initialValues={{
-        layout: formLayout,
+        remember: true,
       }}
+      onFinish={onFinish}
       onValuesChange={onFormLayoutChange}
     >
-      <Form.Item label="메뉴명">
+      <Form.Item label="메뉴명"  name={"name"}>
         <Input placeholder="input placeholder" />
-      </Form.Item>
-      <Form.Item label="가격" >
+      </Form.Item >
+      <Form.Item label="가격"  name={"price"}>
         <InputNumber  style={{
         width: '100%',
       }}/>
       </Form.Item>    
-      <Form.Item label="이미지" valuePropName="fileList">
-        <ImgCrop rotate>
-          <Upload
-            action=""
-            listType="picture-card"
-            fileList={fileList}
-            onChange={onChange}
-            onPreview={onPreview}
-          >
-            {fileList.length < 1 && '+ Upload'}
-          </Upload>
-        </ImgCrop>
+      <Form.Item label="이미지" name={"image"} getValueFromEvent={normFile} valuePropName="fileList">
+        <Upload
+          listType="picture-card"
+          fileList={fileList}
+          onChange={onChange}
+          beforeUpload={beforeUpload}
+        >
+          {fileList.length < 1 && '+ Upload'}
+        </Upload>
       </Form.Item>
-      <Form.Item label="설명">
+      <Form.Item label="설명" name={"description"}>
         <TextArea rows={2} />
       </Form.Item>
       {props.menuList && 
-        <>
-          <Form.Item label="리스트">
+        < >
+          <Form.Item label="리스트" name={"menu_list"} >
           <Select
             mode="multiple"
             style={{
@@ -196,13 +208,15 @@ const AdminAddMenu = (props) => {
           </Form.Item>
         </>
       }
+        <Form.Item >
       <Row>
-        <Col span={4} offset={20}>
-          <Button block  type="primary" >
+        <Col >
+          <Button  type="primary"  htmlType={"submit"}>
             메뉴 추가
           </Button>
         </Col>
       </Row>
+        </Form.Item>
     </Form>
 
       {/* 

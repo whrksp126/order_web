@@ -75,6 +75,33 @@ const Admin = () => {
     }
   }, [menuList])
 
+  const buttonList = [
+    {
+      label : "홈으로",
+      key: 0
+    },
+    {
+      label : "메뉴 추가",
+      key: 1
+    },
+    {
+      label : "메뉴 보기",
+      key: 2
+    },
+    {
+      label : "리스트 추가",
+      key: 3
+    }, 
+    {
+      label : "카테고리 추가",
+      key: 4
+    },
+    {
+      label : "카테고리 보기",
+      key: 5
+    },
+  ]
+
   return (
     <div >
       <Layout style={{width:"100vw", height:"100vh"}}>
@@ -89,23 +116,17 @@ const Admin = () => {
             // console.log(collapsed, type);
           }}
         >
-          <Menu mode="inline" defaultSelectedKeys={['1']} >
-            <Menu.Item key={0}>홈으로</Menu.Item>
-            <Menu.Item key={1}>메뉴 추가</Menu.Item>
-            <Menu.Item key={2}>메뉴 보기</Menu.Item>
-            <Menu.Item key={3}>리스트 추가</Menu.Item>
-            <Menu.Item key={4}>카테고리 추가</Menu.Item>
-            <Menu.Item key={5}>카테고리 보기</Menu.Item>
+          <Menu mode="inline" items={buttonList} defaultSelectedKeys={['1']} >
           </Menu>
         </Sider>
         <Layout>
           <Header style={{ padding: 0, background: "#FFFFFF" }} />
           <Content style={{margin: '24px 16px 0',}}> 
             <Row>
-              <Col span={8}>
+              <Col span={7} >
                 <AdminAddMenu menuList={menuList} />
               </Col>
-              <Col span={16}>
+              <Col span={16} offset={1}>
                 <AdminAllMenu menusLists={menusLists} />
               </Col>
             </Row>
