@@ -125,12 +125,12 @@ const Admin = () => {
             <Row>
               <Col span={7} >
                 <AdminAddMenu menuList={menuList} />
+                <AdminAddMenuList />
               </Col>
               <Col span={16} offset={1}>
                 <AdminAllMenu menusLists={menusLists} />
               </Col>
             </Row>
-            {/* <AdminAddMenuList /> */}
             {/* <AdminAllMenuList menuList={menuList} menusLists={menusLists}changeSelectList={changeSelectList} changeMenuList={changeMenuList} /> */}
           </Content>
           <Footer style={{ textAlign: 'center', }}> Web RMS ©2022 Created by GH_STUDIO </Footer>

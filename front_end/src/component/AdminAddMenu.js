@@ -1,14 +1,16 @@
 import React, { useState } from 'react'
 import axios from 'axios';
 
-import { toast } from 'react-toastify';
-import { Col, InputNumber, Row, Select, Upload } from 'antd';
+import { Col, InputNumber, Row, Select, Upload, message, Tag } from 'antd';
 import { Button, Form, Input } from 'antd';
 
 const AdminAddMenu = (props) => {
   
-  const { Option } = Select;
   const [input_MenuList, setInput_MenuList] = useState();
+  const [fileList, setFileList] = useState([]);
+  const [ form ] = Form.useForm();
+  const { Option } = Select;
+  const { TextArea } = Input;
 
   const handleChangeInput_MenuList = (e, value) => {
     let new_menuList = [];
@@ -19,10 +21,6 @@ const AdminAddMenu = (props) => {
     setInput_MenuList(new_menuList);
   };
 
-  const [form] = Form.useForm();
-  const { TextArea } = Input;
-
-  const [fileList, setFileList] = useState([]);
   const onChange = ({ fileList: newFileList }) => {
     setFileList(newFileList);
   };
@@ -35,7 +33,6 @@ const AdminAddMenu = (props) => {
   const beforeUpload = ({fileList}) => {
       return false;
   }
-
   
   const onFinish = (values) => {
     const MenuData = {
@@ -45,35 +42,53 @@ const AdminAddMenu = (props) => {
       img_url : values['image'][0]['name'],
       menu_list: values['menu_list']
     }
-    console.log('MenuData', MenuData)
-    axios.post("/admin/add_menu", MenuData).then((res)=>{
-      if(res.data.status === 200){
-        toast.success(res.data.message, {
-          position: "top-center",
-          autoClose: 4000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: true,
-          progress: undefined,
-        });
-      }
-      if(res.data.status === 404){
-        toast.error(res.data.message,{
-          position: "top-center",
-          autoClose: 4000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: true,
-          progress: undefined,
-        })
-      }
-    }).catch((err) => {
-      console.log(err)
-    })
+    console.log(values.menu_list)
+    // axios.post("/admin/add_menu", MenuData).then((res)=>{
+    //   if(res.data.status === 200){
+    //     message.success(res.data.message);
+    //   }
+    //   if(res.data.status === 404){
+    //     message.error(res.data.message)
+    //   }
+    // }).catch((err) => {
+    //   console.log(err)
+    // })
   }
 
+  const tagRender = (props) => {
+    const { label, value, closable, onClose } = props;
+  
+    const onPreventMouseDown = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    };
+  
+    return (
+      <Tag
+        color={value}
+        onMouseDown={onPreventMouseDown}
+        closable={closable}
+        onClose={onClose}
+        style={{
+          marginRight: 3,
+        }}
+      >
+        {label}
+      </Tag>
+    );
+  };
+
+  const options = [];
+  if(props.menuList !== null){
+    props.menuList.forEach((item) => {
+      options.push({
+        // value: `${item.name}:${item.color}:${item.id}`,
+        value: item.color,
+        label: item.name
+      })
+    })
+  }
+  console.log(props.menuList)
   return (
     <>      
       <h2>메뉴 추가</h2>
@@ -107,7 +122,20 @@ const AdminAddMenu = (props) => {
         {props.menuList && 
         <>
         <Form.Item label="리스트" name={"menu_list"} >
-          <Select
+        <Select
+          name="menu_list"
+          mode="multiple"
+          showArrow
+          tagRender={tagRender}
+          showSearch
+          optionFilterProp="label"
+          // defaultValue={['gold', 'cyan']}
+          style={{
+            width: '100%',
+          }}
+          options={options}
+        />
+          {/* <Select
             mode="multiple"
             style={{
               width: '100%',
@@ -128,7 +156,7 @@ const AdminAddMenu = (props) => {
                 </Option>
               ))
             }
-          </Select>
+          </Select> */}
         </Form.Item>
         </>
         }
