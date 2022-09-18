@@ -1,3 +1,4 @@
+import json
 from email import message
 from unicodedata import category
 # from models import Menu, Menu_list, R_menu_list
@@ -17,12 +18,12 @@ def add_menu():
   if request.method == 'POST':
     user_id = current_user.id
     
-    json_data = request.get_json()
-    name = json_data['name']
-    price = int(json_data['price'])
-    img_url = json_data['img_url']
-    description = json_data['description']
-    menu_list = json_data['menu_list']
+    json_data = json.loads(request.data)
+    name = json_data.get('name', None)
+    price = int(json_data.get('price', None))
+    img_url = json_data.get('img_url', None)
+    description = json_data.get("description",None)
+    menu_list = json_data.get('menu_list', None)
       
     if len(menu_list) == 0:
       menu_list == None;
@@ -45,17 +46,18 @@ def add_menu():
       category='error',
       status=404
     ) 
-    elif len(description) > 800 :
-      return jsonify(
-      message='설명은 800자 이하입니다.', 
-      category='error',
-      status=404
+    # (리펙토링 해야하라 듯) description이 NoneType 일때 대응
+    elif description != None:
+      if len(description) > 800 :
+        return jsonify(
+        message='설명은 800자 이하입니다.', 
+        category='error',
+        status=404
     )
       
     menu_id = fun_add_menu(name, price, img_url, description, user_id)
     if menu_list != None:
-      for list in menu_list:
-        list_id = int(list.split(':')[1])
+      for list_id in menu_list:
         fun_add_r_menu_list(menu_id, list_id, user_id)
     return jsonify(
       message='메뉴를 추가하였습니다.',

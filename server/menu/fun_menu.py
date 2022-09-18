@@ -62,7 +62,8 @@ def fun_call_all_menus(user_id):
         has_menu.append(menu.id)
         new_menu_list.append({
           "list_id": menu_list.id,
-          "list_name": menu_list.name
+          "list_name": menu_list.name,
+          "list_color": menu_list.color
         })
         menus.append({
           "id": menu.id,
@@ -76,7 +77,8 @@ def fun_call_all_menus(user_id):
         # 데이터 있으면
         [x for x in menus if x['id'] == menu.id][0]['menu_list'].append({
           "list_id": menu_list.id,
-          "list_name": menu_list.name
+          "list_name": menu_list.name,
+          "list_color": menu_list.color
         })
       new_menu_list = []
     return menus

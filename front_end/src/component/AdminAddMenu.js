@@ -35,23 +35,23 @@ const AdminAddMenu = (props) => {
   }
   
   const onFinish = (values) => {
-    // const MenuData = {
-    //   name: values['name'], 
-    //   price: values['price'],
-    //   description: values['description'],
-    //   img_url : values['image'][0]['name'],
-    //   menu_list: values['menu_list']
-    // }
-    // axios.post("/admin/add_menu", MenuData).then((res)=>{
-    //   if(res.data.status === 200){
-    //     message.success(res.data.message);
-    //   }
-    //   if(res.data.status === 404){
-    //     message.error(res.data.message)
-    //   }
-    // }).catch((err) => {
-    //   console.log(err)
-    // })
+    const MenuData = {
+      name: values['name'], 
+      price: values['price'],
+      description: values['description'],
+      img_url : values['image'][0]['name'],
+      menu_list: values['menu_list']
+    }
+    axios.post("/admin/add_menu", MenuData).then((res)=>{
+      if(res.data.status === 200){
+        message.success(res.data.message);
+      }
+      if(res.data.status === 404){
+        message.error(res.data.message)
+      }
+    }).catch((err) => {
+      console.log(err)
+    })
   }
 
   const tagRender = (props) => {
@@ -61,11 +61,11 @@ const AdminAddMenu = (props) => {
       event.stopPropagation();
     };
   
-    console.log(options)
-  
+    const color = options.find(option => option.value === value).color;
+    
     return (
       <Tag
-        color={value}
+        color={color}
         onMouseDown={onPreventMouseDown}
         closable={closable}
         onClose={onClose}

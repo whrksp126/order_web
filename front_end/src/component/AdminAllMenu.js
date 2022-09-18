@@ -32,15 +32,16 @@ const AdminAllMenu = (props) => {
       render: (_, { lists }) => (
         <>
           {lists.map((list) => {
-            let color = list.length > 5 ? 'geekblue' : 'green';
+            
+            // let color = list.length > 5 ? 'geekblue' : 'green';
   
-            if (list === '메인메뉴') {
-              color = 'volcano';
-            }
+            // if (list === '메인메뉴') {
+            //   color = 'volcano';
+            // }
   
             return (
-              <Tag color={color} key={list}>
-                {list.toUpperCase()}
+              <Tag color={list.color} key={list.id}>
+                {list.name.toUpperCase()}
               </Tag>
             );
           })}
@@ -59,15 +60,17 @@ const AdminAllMenu = (props) => {
     },
   ];
 
-
   let data = [];
   if(props.menusLists !== null){
-    
     props.menusLists.forEach((menu, index) =>  {
       let list_name_array = []
       if(menu.menu_list.length > 0){
         menu.menu_list.forEach((list) => {
-          list_name_array.push(list.list_name)
+          list_name_array.push({
+            name : list.list_name,
+            id : list.list_id,
+            color : list.list_color,
+          })
         })
       }      
       data.push({
