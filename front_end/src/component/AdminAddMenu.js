@@ -35,14 +35,13 @@ const AdminAddMenu = (props) => {
   }
   
   const onFinish = (values) => {
-    const MenuData = {
-      name: values['name'], 
-      price: values['price'],
-      description: values['description'],
-      img_url : values['image'][0]['name'],
-      menu_list: values['menu_list']
-    }
-    console.log(values.menu_list)
+    // const MenuData = {
+    //   name: values['name'], 
+    //   price: values['price'],
+    //   description: values['description'],
+    //   img_url : values['image'][0]['name'],
+    //   menu_list: values['menu_list']
+    // }
     // axios.post("/admin/add_menu", MenuData).then((res)=>{
     //   if(res.data.status === 200){
     //     message.success(res.data.message);
@@ -57,11 +56,12 @@ const AdminAddMenu = (props) => {
 
   const tagRender = (props) => {
     const { label, value, closable, onClose } = props;
-  
     const onPreventMouseDown = (event) => {
       event.preventDefault();
       event.stopPropagation();
     };
+  
+    console.log(options)
   
     return (
       <Tag
@@ -77,18 +77,20 @@ const AdminAddMenu = (props) => {
       </Tag>
     );
   };
-
   const options = [];
   if(props.menuList !== null){
     props.menuList.forEach((item) => {
       options.push({
         // value: `${item.name}:${item.color}:${item.id}`,
-        value: item.color,
-        label: item.name
+        // value: item.color,
+        value: item.id,
+        label: item.name,
+        color: item.color,
       })
     })
   }
-  console.log(props.menuList)
+
+
   return (
     <>      
       <h2>메뉴 추가</h2>
@@ -123,7 +125,6 @@ const AdminAddMenu = (props) => {
         <>
         <Form.Item label="리스트" name={"menu_list"} >
         <Select
-          name="menu_list"
           mode="multiple"
           showArrow
           tagRender={tagRender}

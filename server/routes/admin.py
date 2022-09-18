@@ -73,6 +73,9 @@ def add_list():
     json_data = request.get_json()
     name = json_data['name']
     description = json_data['description']
+    color = json_data['color']
+    name = json_data['name']
+    
     if len(name) > 80:
       return jsonify(
       message='리스트명은 80자 미만입니다.', 
@@ -85,9 +88,8 @@ def add_list():
       category='error',
       status=404
     )   
-    
-    print(name, description, user_id)
-    fun_add_menu_list(name, description, user_id)
+  
+    fun_add_menu_list(name, description, color, user_id)
     
     return jsonify(
       message='리스트를 추가하였습니다.',

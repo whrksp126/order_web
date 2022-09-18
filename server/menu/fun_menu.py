@@ -22,11 +22,11 @@ def fun_add_menu(name, price, img_url, description, user_id):
     print("eeeeee fun_add_menu eeeeee,", e)
     
 # 메뉴 리스트 추가 기능 함수
-def fun_add_menu_list(name, description, user_id):
+def fun_add_menu_list(name, description, color, user_id):
   try:
-    menu_list = Menu_list(name=name, description=description, user_id=user_id)
+    menu_list = Menu_list(name=name, description=description, color=color, user_id=user_id)
     print('#############################')
-    print(name, description, user_id)
+    print(name, description, color, user_id)
     db.session.add(menu_list)
     db.session.commit()
     db.session.close()
@@ -109,7 +109,9 @@ def fun_call_all_menu_list(user_id):
     for list_item in menu_lists:
       menu_list.append({
         "id": list_item.id,
-        "name": list_item.name
+        "name": list_item.name,
+        "description": list_item.description,
+        "color": list_item.color,
       })
     return menu_list
     
