@@ -1,8 +1,28 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Space, Table, Tag } from 'antd';
 
 const AdminAllMenu = (props) => {
 
+  const [filteredInfo, setFilteredInfo] = useState({});
+  const [sortedInfo, setSortedInfo] = useState({});
+
+
+  const handleChange = (pagination, filters, sorter) => {
+    console.log('Various parameters', pagination, filters, sorter);
+    setFilteredInfo(filters);
+    setSortedInfo(sorter);
+  };
+
+  let menu_list_filters = [];
+  if(props.menuList !== null){
+    props.menuList.forEach((list, index) => {
+      menu_list_filters.push({
+        text: list.name,
+        value: list.name,
+      })
+    })
+  }
+  
   const columns = [
     {
       title: '메뉴명',
@@ -14,6 +34,9 @@ const AdminAllMenu = (props) => {
       title: '가격',
       dataIndex: 'price',
       key: 'price',
+      sorter: (a, b) => a.price - b.price,
+      sortOrder: sortedInfo.columnKey === 'price' ? sortedInfo.order : null,
+      ellipsis: true,
     },
     {
       title: '이미지',
@@ -29,6 +52,10 @@ const AdminAllMenu = (props) => {
       title: '리스트',
       key: 'list',
       dataIndex: 'list',
+      filters: menu_list_filters,
+      // filteredValue: filteredInfo.name || null,
+      filteredValue: filteredInfo.name || null,
+      onFilter: (value, record) => record.name.includes(value),
       render: (_, { lists }) => (
         <>
           {lists.map((list) => {
@@ -41,12 +68,13 @@ const AdminAllMenu = (props) => {
   
             return (
               <Tag color={list.color} key={list.id}>
-                {list.name.toUpperCase()}
+                {list.name}
               </Tag>
             );
           })}
         </>
       ),
+      ellipsis: true,
     },
     {
       title: '기능',
@@ -90,7 +118,7 @@ const AdminAllMenu = (props) => {
   return (
     <>
       <h2>모든 메뉴</h2>
-      {props.menus && <>
+      {/* {props.menus && <>
         <table>
           <thead>
             <tr>
@@ -116,9 +144,9 @@ const AdminAllMenu = (props) => {
             ))}
           </tbody>
         </table>
-      </>}
+      </>} */}
 
-      <Table columns={columns} dataSource={data} />
+      <Table columns={columns} dataSource={data}  onChange={handleChange} />
     </>
   )
 }

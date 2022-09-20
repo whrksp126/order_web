@@ -128,7 +128,7 @@ const Admin = () => {
                 <AdminAddMenuList />
               </Col>
               <Col span={16} offset={1}>
-                <AdminAllMenu menusLists={menusLists} />
+                <AdminAllMenu menusLists={menusLists} menuList={menuList} />
               </Col>
             </Row>
             {/* <AdminAllMenuList menuList={menuList} menusLists={menusLists}changeSelectList={changeSelectList} changeMenuList={changeMenuList} /> */}
