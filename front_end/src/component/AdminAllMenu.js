@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { Space, Table, Tag } from 'antd';
+import { message, Popconfirm, Space, Table, Tag } from 'antd';
+import axios from 'axios';
 
 const AdminAllMenu = (props) => {
 
@@ -8,7 +9,8 @@ const AdminAllMenu = (props) => {
 
 
   const handleChange = (pagination, filters, sorter) => {
-    console.log('Various parameters', pagination, filters, sorter);
+    // console.log('Various parameters', pagination, filters, sorter);
+    console.log(filters)
     setFilteredInfo(filters);
     setSortedInfo(sorter);
   };
@@ -53,9 +55,16 @@ const AdminAllMenu = (props) => {
       key: 'list',
       dataIndex: 'list',
       filters: menu_list_filters,
-      // filteredValue: filteredInfo.name || null,
-      filteredValue: filteredInfo.name || null,
-      onFilter: (value, record) => record.name.includes(value),
+      filteredValue: filteredInfo.list || null,
+      // return 값이 true 이면 해당 record 데이터를 보여준다
+      onFilter: (value, record) => {
+        let hasMenuList = [];
+        record.lists.forEach((list) => {
+          hasMenuList.push(list.name);
+        })
+        return hasMenuList.includes(value)
+      },
+      // 리스트를 tag 형식으로 출력한다.
       render: (_, { lists }) => (
         <>
           {lists.map((list) => {
@@ -78,13 +87,12 @@ const AdminAllMenu = (props) => {
     },
     {
       title: '기능',
-      key: 'action',
-      render: (_, record) => (
-        <Space size="middle">
-          <a>수정</a>
-          <a>삭제</a>
-        </Space>
-      ),
+      dataIndex: '기능',
+      render: (_, record) =>(
+        <Popconfirm title="정말 '삭제' 하시겠습니까?" onConfirm={() => handleDelete(record)}>
+          <a>Delete</a>
+        </Popconfirm>
+      )
     },
   ];
 
@@ -103,6 +111,7 @@ const AdminAllMenu = (props) => {
       }      
       data.push({
         "key": index,
+        "id": menu.id,
         "name": menu.name,
         "price": menu.price,
         "img_url": menu.img_url,
@@ -113,6 +122,23 @@ const AdminAllMenu = (props) => {
       list_name_array = []
     })
 
+  }
+
+  const handleDelete = (data) => {
+    const input_List = { "menu_id" : data.id }
+    console.log(input_List)
+    axios.post("/admin/delete_menu", input_List)
+    .then((res)=> {
+      if(res.data.status === 200){
+        message.success(res.data.message);
+      }
+      if(res.data.status === 404){
+        message.error(res.data.message)
+      }
+    })
+    .catch((err) => {
+      console.log(err)
+    })
   }
 
   return (

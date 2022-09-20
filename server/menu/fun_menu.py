@@ -25,8 +25,6 @@ def fun_add_menu(name, price, img_url, description, user_id):
 def fun_add_menu_list(name, description, color, user_id):
   try:
     menu_list = Menu_list(name=name, description=description, color=color, user_id=user_id)
-    print('#############################')
-    print(name, description, color, user_id)
     db.session.add(menu_list)
     db.session.commit()
     db.session.close()
@@ -120,3 +118,21 @@ def fun_call_all_menu_list(user_id):
   except Exception as e:
     print("eeeeee fun_call_all_menu_list eeeeee", e)
     
+# 메뉴 삭제
+def fun_delete_menu(menuId):
+  try:
+    # pk로 연결된 경우 저장된 연결된 데이터 먼저 제거한다.
+    r_menu_list = db.session.query(R_menu_list) \
+      .filter(R_menu_list.menu_id == menuId) \
+      .all()
+    for menu_list in r_menu_list:
+      db.session.delete(menu_list)
+      
+    menu = db.session.query(Menu) \
+      .filter(Menu.id == menuId) \
+      .first()
+    db.session.delete(menu)
+    db.session.commit()
+  
+  except Exception as e:
+    print("eeeeee delete_menu eeeeee", e)

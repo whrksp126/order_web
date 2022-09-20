@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, current_user, logout_user, login_required
 from menu.fun_menu import fun_call_all_menus, fun_call_menu, \
   fun_call_all_menus, fun_add_r_menu_list, fun_add_menu_list, \
-  fun_call_all_menu_list, fun_add_menu
+  fun_call_all_menu_list, fun_add_menu, fun_delete_menu
 from . import *
 bp = Blueprint("admin", __name__, url_prefix="/admin")
 
@@ -114,5 +114,23 @@ def menu_management_page():
       menu=menu,
       menu_list=menu_list,
       menus_lists=menus_lists,
+      status=200
+    )
+
+
+# 메뉴 삭제하기
+@bp.route('/delete_menu', methods=['POST'])
+@login_required
+def delete_menu():
+  user_id = current_user.id
+
+  json_data = request.get_json()
+  menu_id = json_data['menu_id']
+  print("user_id,",user_id , "menu_id,", menu_id)
+  
+  fun_delete_menu(menu_id)
+  return jsonify(
+      message='메뉴를 삭제 하였습니다.',
+      category='success',
       status=200
     )
