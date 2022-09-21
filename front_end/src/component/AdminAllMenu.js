@@ -1,16 +1,30 @@
 import React, { useState } from 'react'
-import { message, Popconfirm, Space, Table, Tag } from 'antd';
+import { Form, Input, InputNumber, message, Popconfirm, Select, Space, Table, Tag, Typography, Upload } from 'antd';
 import axios from 'axios';
+
 
 const AdminAllMenu = (props) => {
 
+  const [form] = Form.useForm();
+
   const [filteredInfo, setFilteredInfo] = useState({});
   const [sortedInfo, setSortedInfo] = useState({});
+  const [editingKey, setEditingKey] = useState('');
 
+  const isEditing = (record) => record.key === editingKey;
+
+  const edit = (record) => {
+    form.setFieldsValue({
+      name: '',
+      price: '',
+      img_url: '',
+      lists: '',
+        ...record,
+    });
+    setEditingKey(record.key);
+  };
 
   const handleChange = (pagination, filters, sorter) => {
-    // console.log('Various parameters', pagination, filters, sorter);
-    console.log(filters)
     setFilteredInfo(filters);
     setSortedInfo(sorter);
   };
@@ -30,6 +44,7 @@ const AdminAllMenu = (props) => {
       title: '메뉴명',
       dataIndex: 'name',
       key: 'name',
+      editable: true,
       render: (text) => <a>{text}</a>,
     },
     {
@@ -39,16 +54,19 @@ const AdminAllMenu = (props) => {
       sorter: (a, b) => a.price - b.price,
       sortOrder: sortedInfo.columnKey === 'price' ? sortedInfo.order : null,
       ellipsis: true,
+      editable: true,
     },
     {
       title: '이미지',
       dataIndex: 'img_url',
       key: 'img_url',
+      editable: true,
     },
     {
       title: '설명',
       dataIndex: 'description',
       key: 'description',
+      editable: true,
     },
     {
       title: '리스트',
@@ -56,6 +74,7 @@ const AdminAllMenu = (props) => {
       dataIndex: 'list',
       filters: menu_list_filters,
       filteredValue: filteredInfo.list || null,
+      editable: true,
       // return 값이 true 이면 해당 record 데이터를 보여준다
       onFilter: (value, record) => {
         let hasMenuList = [];
@@ -88,15 +107,38 @@ const AdminAllMenu = (props) => {
     {
       title: '기능',
       dataIndex: '기능',
-      render: (_, record) =>(
-        <Popconfirm title="정말 '삭제' 하시겠습니까?" onConfirm={() => handleDelete(record)}>
-          <a>Delete</a>
-        </Popconfirm>
-      )
+      render: (_, record) => {
+        const editable = isEditing(record);
+        return editable ? (
+          <span>
+            <Typography.Link
+              onClick={() => save(record.key)}
+              style={{
+                marginRight: 8,
+              }}
+            >
+              Save
+            </Typography.Link>
+            <Popconfirm title="정말 취소 하시겠습니까?" onConfirm={cancel}>
+              <a>Cancel</a>
+            </Popconfirm>
+          </span>
+        ) : 
+        ( 
+          <>
+            <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
+              Edit
+            </Typography.Link>
+            <Popconfirm title="정말 '삭제' 하시겠습니까?" onConfirm={() => handleDelete(record)}>
+              <a>Delete</a>
+            </Popconfirm>
+          </>
+        )
+      }
     },
   ];
 
-  let data = [];
+  let data_list = [];
   if(props.menusLists !== null){
     props.menusLists.forEach((menu, index) =>  {
       let list_name_array = []
@@ -109,7 +151,7 @@ const AdminAllMenu = (props) => {
           })
         })
       }      
-      data.push({
+      data_list.push({
         "key": index,
         "id": menu.id,
         "name": menu.name,
@@ -121,12 +163,13 @@ const AdminAllMenu = (props) => {
       })
       list_name_array = []
     })
-
   }
+
+  const [data, setData] = useState(data_list);
+
 
   const handleDelete = (data) => {
     const input_List = { "menu_id" : data.id }
-    console.log(input_List)
     axios.post("/admin/delete_menu", input_List)
     .then((res)=> {
       if(res.data.status === 200){
@@ -141,38 +184,132 @@ const AdminAllMenu = (props) => {
     })
   }
 
+  const EditableCell = ({
+    editing,
+    dataIndex,
+    title,
+    inputType,
+    record,
+    index,
+    children,
+    ...restProps
+  }) => {
+    let inputNode;
+    if(inputType === 'number'){
+      inputNode = <InputNumber />
+    }else if(inputType === 'img_url'){
+      inputNode = <Upload 
+        listType="picture-card"
+        // fileList={fileList}
+        // onChange={onChange}
+        // beforeUpload={beforeUpload}
+      />
+    }else if(inputType === 'lists'){
+      inputNode = <Select           
+        mode="multiple"
+        showArrow
+        // tagRender={tagRender}
+        showSearch
+        optionFilterProp="label"
+        // defaultValue={['gold', 'cyan']}
+        style={{
+          width: '100%',
+        }}
+        // options={options}
+        />
+    }else{
+      <Input />
+    }
+    // let inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
+    return (
+      <td {...restProps}>
+        {editing ? (
+          <Form.Item
+            name={dataIndex}
+            style={{
+              margin: 0,
+            }}
+            rules={[
+              {
+                required: true,
+                message: `Please Input ${title}!`,
+              },
+            ]}
+          >
+            {inputNode}
+          </Form.Item>
+        ) : (
+          children
+        )}
+      </td>
+    );
+  };
+  
+  const save = async (key) => {
+    try {
+      const row = await form.validateFields();
+      const newData = [...data];
+      const index = newData.findIndex((item) => key === item.key);
+
+      if (index > -1) {
+        const item = newData[index];
+        newData.splice(index, 1, { ...item, ...row });
+        setData(newData);
+        setEditingKey('');
+      } else {
+        newData.push(row);
+        setData(newData);
+        setEditingKey('');
+      }
+    } catch (errInfo) {
+      console.log('Validate Failed:', errInfo);
+    }
+  };
+
+  const cancel = () => {
+    setEditingKey('');
+  };
+  
+  const mergedColumns = columns.map((col) => {
+    if (!col.editable) {
+      return col;
+    }
+    let input_type;
+    if(col.dataIndex === 'price'){
+      input_type = 'number'
+    }else if(col.dataIndex === 'img_url'){
+      input_type = 'upload'
+    }else if(col.dataIndex === 'lists'){
+      input_type = 'select'
+    }else{
+      input_type = 'text'
+    };
+    return {
+      
+      ...col,
+      onCell: (record) => ({
+        record,
+        // inputType: col.dataIndex === 'price' ? 'number' : 'text',
+        inputType: input_type,
+        dataIndex: col.dataIndex,
+        title: col.title,
+        editing: isEditing(record),
+      }),
+    };
+  });
+
   return (
     <>
       <h2>모든 메뉴</h2>
-      {/* {props.menus && <>
-        <table>
-          <thead>
-            <tr>
-              <th>메뉴명</th>
-              <th>가격</th>
-              <th>설명</th>
-              <th>추가기능</th>
-            </tr>
-          </thead>
-          <tbody>
-            {props.menusLists.map((menu, index) =>(
-              <tr key={index}>
-                <td>{menu.name}</td>
-                <td>{menu.price}원</td>
-                <td>{menu.description}</td>
-                <td>
-                  <button 
-                  onClick={()=>console.log(menu.id)}>
-                    수정
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </>} */}
-
-      <Table columns={columns} dataSource={data}  onChange={handleChange} />
+      <Form form={form} component={false}>
+        <Table 
+          components={{ body: { cell: EditableCell, }}} 
+          columns={mergedColumns} 
+          dataSource={data_list} 
+          onChange={handleChange} 
+          rowClassName="editable-row"
+          />
+      </Form>
     </>
   )
 }
