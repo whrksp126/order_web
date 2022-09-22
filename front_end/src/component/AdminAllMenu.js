@@ -195,16 +195,25 @@ const AdminAllMenu = (props) => {
     ...restProps
   }) => {
     let inputNode;
+    
+    console.log(editing)
+    console.log(dataIndex)
+    console.log(title)
+    console.log(inputType)
+    console.log(record)
+    console.log(index)
+    console.log(children)
+    console.log(restProps)
     if(inputType === 'number'){
       inputNode = <InputNumber />
-    }else if(inputType === 'img_url'){
+    }else if(inputType === 'upload'){
       inputNode = <Upload 
         listType="picture-card"
         // fileList={fileList}
         // onChange={onChange}
         // beforeUpload={beforeUpload}
       />
-    }else if(inputType === 'lists'){
+    }else if(inputType === 'select'){
       inputNode = <Select           
         mode="multiple"
         showArrow
@@ -218,7 +227,7 @@ const AdminAllMenu = (props) => {
         // options={options}
         />
     }else{
-      <Input />
+      inputNode = <Input />
     }
     // let inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
     return (
@@ -279,7 +288,7 @@ const AdminAllMenu = (props) => {
       input_type = 'number'
     }else if(col.dataIndex === 'img_url'){
       input_type = 'upload'
-    }else if(col.dataIndex === 'lists'){
+    }else if(col.dataIndex === 'list'){
       input_type = 'select'
     }else{
       input_type = 'text'
