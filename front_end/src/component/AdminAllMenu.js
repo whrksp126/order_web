@@ -184,6 +184,43 @@ const AdminAllMenu = (props) => {
     })
   }
 
+  const options = [];
+  if(props.menuList !== null){
+    props.menuList.forEach((item) => {
+      options.push({
+        // value: `${item.name}:${item.color}:${item.id}`,
+        // value: item.color,
+        value: item.id,
+        label: item.name,
+        color: item.color,
+      })
+    })
+  }
+
+  const tagRender = (props) => {
+    const { label, value, closable, onClose } = props;
+    const onPreventMouseDown = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    };
+  
+    const color = options.find(option => option.value === value).color;
+    
+    return (
+      <Tag
+        color={color}
+        onMouseDown={onPreventMouseDown}
+        closable={closable}
+        onClose={onClose}
+        style={{
+          marginRight: 3,
+        }}
+      >
+        {label}
+      </Tag>
+    );
+  };
+
   const EditableCell = ({
     editing,
     dataIndex,
@@ -194,37 +231,32 @@ const AdminAllMenu = (props) => {
     children,
     ...restProps
   }) => {
-    let inputNode;
     
-    console.log(editing)
-    console.log(dataIndex)
-    console.log(title)
-    console.log(inputType)
-    console.log(record)
-    console.log(index)
-    console.log(children)
-    console.log(restProps)
+    let inputNode;
+  
     if(inputType === 'number'){
       inputNode = <InputNumber />
-    }else if(inputType === 'upload'){
-      inputNode = <Upload 
-        listType="picture-card"
+    }
+    // else if(inputType === 'upload'){
+      // inputNode = <Upload 
+        // listType="picture-card"
         // fileList={fileList}
         // onChange={onChange}
         // beforeUpload={beforeUpload}
-      />
-    }else if(inputType === 'select'){
+      // />
+    // }
+    else if(inputType === 'select'){
       inputNode = <Select           
         mode="multiple"
         showArrow
-        // tagRender={tagRender}
+        tagRender={tagRender}
         showSearch
         optionFilterProp="label"
-        // defaultValue={['gold', 'cyan']}
+        defaultValue={[...new Set(record.lists.map(item => item.id))]}
         style={{
           width: '100%',
         }}
-        // options={options}
+        options={options}
         />
     }else{
       inputNode = <Input />
