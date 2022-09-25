@@ -30,33 +30,35 @@ const AdminAddMenu = (props) => {
     }
     return e && e.fileList;
   };
-  const beforeUpload = ({fileList}) => {
-      return false;
+  const beforeUpload = (file) => {
+    // return false;
+    setFileList(fileList.concat(file));
+    return false;	// 파일 선택시 바로 업로드 하지 않고 후에 한꺼번에 전송하기 위함
+        
   }
   
   const onFinish = (values) => {
     let files = fileList
+    console.log(files)
     let formData = new FormData();
-    for (let i = 0; i < files.length; i++) {
-      console.log(files[i])
-      formData.append("files", files[i]);
-      console.log(formData)
-    }
     let MenuData = {
       name: values['name'], 
       price: values['price'],
       description: values['description'],
       menu_list: values['menu_list']
     }
-    formData.append("data", JSON.stringify(MenuData));
-
-    console.log(formData)
-
-    axios.post("/admin/add_menu", formData, {
+    console.log('values.image,',values.image[0].originFileObj)
+    formData.append('file', values.image[0].originFileObj)
+    for(let key in MenuData) {
+    	formData.append(key, MenuData[key]);
+    }
+    axios.post("/admin/add_menu", formData, 
+    {
       headers: {
         "Content-Type": "multipart/form-data",
       }
-    }).then((res)=>{
+    }
+    ).then((res)=>{
       if(res.data.status === 200){
         message.success(res.data.message);
       }

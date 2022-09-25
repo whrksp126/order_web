@@ -24,10 +24,23 @@ def allowed_file(filename):
 
 # 메뉴 추가
 @bp.route('/add_menu', methods=['POST'])
-@login_required
 def add_menu():
+# @login_required
   if request.method == 'POST':
-    user_id = current_user.id
+    # user_id = current_user.id
+    f_file = request.files['file']
+    f_name = request.form['name']
+    f_price = request.form['price']
+    f_description = request.form['description']
+    f_menu_list = request.form['menu_list']
+    print(f_file.filename)
+    # print(f_name)
+    # print(f_price)
+    # print(f_description)
+    # print(f_menu_list)
+    filename = secure_filename(f_file.filename)
+    os.makedirs(app.config['UPLOAD_FOLDER'])
+    f_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     
     # json_data = json.loads(request.data)
     # name = json_data.get('name', None)
@@ -35,11 +48,6 @@ def add_menu():
     # img_url = json_data.get('file', None)
     # description = json_data.get("description",None)
     # menu_list = json_data.get('menu_list', None)
-    print(request.files)
-    print(json.loads(request.data))
-    # f = request.files
-    # f.save("./img/" + secure_filename(f.filename))
-    # return 'file uploaded successfully'
     
     # if len(menu_list) == 0:
     #   menu_list == None;
