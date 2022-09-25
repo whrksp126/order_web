@@ -35,14 +35,28 @@ const AdminAddMenu = (props) => {
   }
   
   const onFinish = (values) => {
-    const MenuData = {
+    let files = fileList
+    let formData = new FormData();
+    for (let i = 0; i < files.length; i++) {
+      console.log(files[i])
+      formData.append("files", files[i]);
+      console.log(formData)
+    }
+    let MenuData = {
       name: values['name'], 
       price: values['price'],
       description: values['description'],
-      img_url : values['image'][0]['name'],
       menu_list: values['menu_list']
     }
-    axios.post("/admin/add_menu", MenuData).then((res)=>{
+    formData.append("data", JSON.stringify(MenuData));
+
+    console.log(formData)
+
+    axios.post("/admin/add_menu", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      }
+    }).then((res)=>{
       if(res.data.status === 200){
         message.success(res.data.message);
       }
