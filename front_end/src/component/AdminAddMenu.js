@@ -70,6 +70,7 @@ const AdminAddMenu = (props) => {
     })
   }
 
+  
   const tagRender = (props) => {
     const { label, value, closable, onClose } = props;
     const onPreventMouseDown = (event) => {
@@ -110,6 +111,7 @@ const AdminAddMenu = (props) => {
   return (
     <>      
       <h2>메뉴 추가</h2>
+      {/* <img src="http://localhost:5000/uploads/공기밥.jpg" alt="test" /> */}
       <Form
         labelCol={{ span: 4 }}
         wrapperCol={{ span: 20 }}

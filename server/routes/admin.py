@@ -2,7 +2,7 @@ import json
 from email import message
 from unicodedata import category
 # from models import Menu, Menu_list, R_menu_list
-from flask import request, jsonify, Blueprint
+from flask import request, jsonify, Blueprint, send_file, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, current_user, logout_user, login_required
 from menu.fun_menu import fun_call_all_menus, fun_call_menu, \
@@ -21,6 +21,15 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 def allowed_file(filename):
   return '.' in filename and \
     filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+    
+# 이미지 GET 호출 api 만들기
+@app.route("/uploads/<path:name>")
+def download_file(name):
+  print(name)
+  print(app.config['UPLOAD_FOLDER'])
+  return send_from_directory('../' + app.config['UPLOAD_FOLDER'], name);
+
+
 
 # 메뉴 추가
 @bp.route('/add_menu', methods=['POST'])
@@ -33,15 +42,14 @@ def add_menu():
     f_price = request.form['price']
     f_description = request.form['description']
     f_menu_list = request.form['menu_list']
-    print(f_file.filename)
-    # print(f_name)
-    # print(f_price)
-    # print(f_description)
-    # print(f_menu_list)
-    filename = secure_filename(f_file.filename)
-    os.makedirs(app.config['UPLOAD_FOLDER'])
-    f_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    
+    # filename = secure_filename(f_file.filename)
+    # os.makedirs(app.config['UPLOAD_FOLDER'])
+    # f_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))'
+    if f_file and allowed_file(f_file.filename):
+      # filename = secure_filename(f_file.filename)
+      os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+      f_file.save(os.path.join(app.config['UPLOAD_FOLDER'], f_file.filename))
+
     # json_data = json.loads(request.data)
     # name = json_data.get('name', None)
     # price = int(json_data.get('price', None))
@@ -88,6 +96,7 @@ def add_menu():
       category='success',
       status=200
     )
+
 
 # 메뉴 리스트 추가
 @bp.route('/add_list', methods=['POST'])
