@@ -25,9 +25,7 @@ def allowed_file(filename):
 # 이미지 GET 호출 api 만들기
 @app.route("/uploads/<path:name>")
 def download_file(name):
-  print(name)
-  print(app.config['UPLOAD_FOLDER'])
-  return send_from_directory('../' + app.config['UPLOAD_FOLDER'], name);
+  return send_from_directory('../' + app.config['UPLOAD_FOLDER'] + 'menu_images/1/', name);
 
 
 

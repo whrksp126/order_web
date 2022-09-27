@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Form, Input, InputNumber, message, Popconfirm, Select, Space, Table, Tag, Typography, Upload } from 'antd';
+import { Form, Image, Input, InputNumber, message, Popconfirm, Select, Space, Table, Tag, Typography, Upload } from 'antd';
 import axios from 'axios';
 
 
@@ -61,6 +61,11 @@ const AdminAllMenu = (props) => {
       dataIndex: 'img_url',
       key: 'img_url',
       editable: true,
+      render: (img_url) => (
+        <div style={{ width: '40px', overflow: 'hidden', borderRadius: "100%" }}>
+          <Image src={'http://localhost:5000/uploads/' + img_url} alt={img_url}/>
+        </div>
+      )
     },
     {
       title: '설명',
@@ -221,6 +226,17 @@ const AdminAllMenu = (props) => {
     );
   };
 
+  const [fileList, setFileList] = useState([]);
+  const onChange = ({ fileList: newFileList }) => {
+    console.log('실행됨')
+    setFileList(newFileList);
+  };
+  const beforeUpload = (file) => {
+    // return false;
+    setFileList(fileList.concat(file));
+    return false;	// 파일 선택시 바로 업로드 하지 않고 후에 한꺼번에 전송하기 위함
+        
+  }
   const EditableCell = ({
     editing,
     dataIndex,
@@ -231,20 +247,42 @@ const AdminAllMenu = (props) => {
     children,
     ...restProps
   }) => {
-    
+    // console.log('editing,',editing);
+    // console.log('dataIndex,',dataIndex);
+    // console.log('title,',title);
+    // console.log('inputType,',inputType);
+    // console.log('record,',record);
+    // console.log('index,',index);
+    // console.log('children,',children);
+    // console.log('restProps,',restProps);
     let inputNode;
-  
     if(inputType === 'number'){
       inputNode = <InputNumber />
     }
-    // else if(inputType === 'upload'){
-      // inputNode = <Upload 
-        // listType="picture-card"
-        // fileList={fileList}
-        // onChange={onChange}
-        // beforeUpload={beforeUpload}
-      // />
-    // }
+    else if(inputType === 'upload'){
+    
+      inputNode =           
+      <Upload
+        listType="picture-card"
+        fileList={fileList}
+        onChange = {onChange}
+        beforeUpload={beforeUpload}
+        defaultFileList={
+          [
+            {
+              uid: record.id,
+              name: record.img_url,
+              status: 'done',
+              // response: 'Server Error 500',
+              // custom error message to show
+              url: `http://localhost:5000/uploads/${record.img_url}`,
+            },
+          ]
+        }
+      >
+      {fileList.length < 1 && '+ Upload'}
+    </Upload>
+    }
     else if(inputType === 'select'){
       inputNode = <Select           
         mode="multiple"
