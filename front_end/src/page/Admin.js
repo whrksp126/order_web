@@ -71,7 +71,9 @@ const Admin = () => {
   
   useEffect(()=> {
     if(menuList !== null){
-      changeSelectList(menuList[0].id)
+      if(menuList.length > 0){
+        changeSelectList(menuList[0].id)
+      }
     }
   }, [menuList])
 

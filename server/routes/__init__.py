@@ -11,7 +11,7 @@ app = Flask(__name__)
 # 세션을 고정된 값으로 생성한다.
 app.secret_key = 'server_session'
 
-UPLOAD_FOLDER = 'static/uploads/'
+UPLOAD_FOLDER = 'static/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 login_manager = LoginManager()

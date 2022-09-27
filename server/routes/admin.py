@@ -33,22 +33,34 @@ def download_file(name):
 
 # 메뉴 추가
 @bp.route('/add_menu', methods=['POST'])
+@login_required
 def add_menu():
-# @login_required
   if request.method == 'POST':
-    # user_id = current_user.id
-    f_file = request.files['file']
-    f_name = request.form['name']
-    f_price = request.form['price']
-    f_description = request.form['description']
-    f_menu_list = request.form['menu_list']
-    # filename = secure_filename(f_file.filename)
-    # os.makedirs(app.config['UPLOAD_FOLDER'])
-    # f_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))'
-    if f_file and allowed_file(f_file.filename):
-      # filename = secure_filename(f_file.filename)
-      os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-      f_file.save(os.path.join(app.config['UPLOAD_FOLDER'], f_file.filename))
+    user_id = current_user.id
+    image = request.files['file']
+    name = request.form['name']
+    price = int(request.form['price'])
+    description = request.form.get('description', None)
+    menu_list = request.form.get('menu_list', None)
+    if description == 'undefined':
+      description = None;
+    if menu_list == 'undefined':
+      menu_list = None;
+    print('user_id,', user_id)
+    print('image,', image)
+    print('name,', name)
+    print('price,', price)
+    print('description,', description)
+    print('menu_list,', menu_list)
+    
+    # 이미지 서버에 저장
+    if image and allowed_file(image.filename):
+      # 파일 형식 추출(jpg, png, ...)
+      # imageType = secure_filename(f_file.filename)
+      path_menu_images = app.config['UPLOAD_FOLDER'] + 'menu_images/' + str(user_id)
+      os.makedirs(path_menu_images, exist_ok=True)
+      image.save(os.path.join(path_menu_images, image.filename))
+      # os.rename(path_menu_images + '/' + f_file.filename, path_menu_images + '/1.' + imageType)
 
     # json_data = json.loads(request.data)
     # name = json_data.get('name', None)
@@ -58,39 +70,39 @@ def add_menu():
     # menu_list = json_data.get('menu_list', None)
     
     # if len(menu_list) == 0:
-    #   menu_list == None;
+      # menu_list == None;
     
-    # if len(name) > 80:
-    #   return jsonify(
-    #   message='메뉴명은 80자 미만입니다.', 
-    #   category='error',
-    #   status=404
-    # )
-    # elif isinstance(price, int) != True:
-    #   return jsonify(
-    #   message='가격은 숫자만 입력이 가능합니다.', 
-    #   category='error',
-    #   status=404
-    # )
+    if len(name) > 80:
+      return jsonify(
+      message='메뉴명은 80자 미만입니다.', 
+      category='error',
+      status=404
+    )
+    elif isinstance(price, int) != True:
+      return jsonify(
+      message='가격은 숫자만 입력이 가능합니다.', 
+      category='error',
+      status=404
+    )
     # elif len(img_url) > 400:
     #  return jsonify(
-    #   message='잘못된 이미지 경로입니다.', 
-    #   category='error',
-    #   status=404
+      # message='잘못된 이미지 경로입니다.', 
+      # category='error',
+      # status=404
     # ) 
-    # # (리펙토링 해야하라 듯) description이 NoneType 일때 대응
-    # elif description != None:
-    #   if len(description) > 800 :
-    #     return jsonify(
-    #     message='설명은 800자 이하입니다.', 
-    #     category='error',
-    #     status=404
-    # )
+    # (리펙토링 해야하라 듯) description이 NoneType 일때 대응
+    elif description != None:
+      if len(description) > 800 :
+        return jsonify(
+        message='설명은 800자 이하입니다.', 
+        category='error',
+        status=404
+    )
       
-    # menu_id = fun_add_menu(name, price, img_url, description, user_id)
-    # if menu_list != None:
-    #   for list_id in menu_list:
-    #     fun_add_r_menu_list(menu_id, list_id, user_id)
+    menu_id = fun_add_menu(name, price, image.filename, description, user_id)
+    if menu_list != None:
+      for list_id in menu_list:
+        fun_add_r_menu_list(menu_id, list_id, user_id)
     return jsonify(
       message='메뉴를 추가하였습니다.',
       category='success',

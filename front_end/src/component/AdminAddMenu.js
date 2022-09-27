@@ -38,16 +38,13 @@ const AdminAddMenu = (props) => {
   }
   
   const onFinish = (values) => {
-    let files = fileList
-    console.log(files)
     let formData = new FormData();
     let MenuData = {
       name: values['name'], 
       price: values['price'],
       description: values['description'],
-      menu_list: values['menu_list']
+      menu_list: values['menu_list'],
     }
-    console.log('values.image,',values.image[0].originFileObj)
     formData.append('file', values.image[0].originFileObj)
     for(let key in MenuData) {
     	formData.append(key, MenuData[key]);
