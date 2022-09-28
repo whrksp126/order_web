@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Form, Image, Input, InputNumber, message, Popconfirm, Select, Space, Table, Tag, Typography, Upload } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
+
 import axios from 'axios';
 
 
@@ -63,9 +64,18 @@ const AdminAllMenu = (props) => {
       key: 'img_url',
       editable: true,
       render: (img_url) => (
-        <div style={{ width: '40px', overflow: 'hidden', borderRadius: "100%" }}>
-          <Image src={'http://localhost:5000/uploads/' + img_url} alt={img_url}/>
-        </div>
+        <Upload
+          showUploadList={{
+            showDownloadIcon: false,
+            showRemoveIcon: false,
+          }}
+          defaultFileList={[{
+              name: img_url,
+              status: 'done',
+              url: `http://localhost:5000/uploads/${img_url}`,
+          }]}
+        >
+        </Upload>
       )
     },
     {
@@ -93,13 +103,6 @@ const AdminAllMenu = (props) => {
       render: (_, { lists }) => (
         <>
           {lists.map((list) => {
-            
-            // let color = list.length > 5 ? 'geekblue' : 'green';
-  
-            // if (list === '메인메뉴') {
-            //   color = 'volcano';
-            // }
-  
             return (
               <Tag color={list.color} key={list.id}>
                 {list.name}
@@ -227,17 +230,6 @@ const AdminAllMenu = (props) => {
     );
   };
 
-  const [fileList, setFileList] = useState([]);
-  // const onChange = ({ fileList: newFileList }) => {
-  //   console.log('실행됨')
-  //   setFileList(newFileList);
-  // };
-  const beforeUpload = (file) => {
-    // return false;
-    // setFileList(fileList.concat(file));
-    return false;	// 파일 선택시 바로 업로드 하지 않고 후에 한꺼번에 전송하기 위함
-        
-  }
   const EditableCell = ({
     editing,
     dataIndex,
@@ -248,38 +240,33 @@ const AdminAllMenu = (props) => {
     children,
     ...restProps
   }) => {
-    // console.log('editing,',editing);
-    // console.log('dataIndex,',dataIndex);
-    // console.log('title,',title);
-    // console.log('inputType,',inputType);
-    // console.log('record,',record);
-    // console.log('index,',index);
-    // console.log('children,',children);
-    // console.log('restProps,',restProps);
     let inputNode;
+    const [hasImg, setHasImg] = useState(false);
     if(inputType === 'number'){
       inputNode = <InputNumber />
     }
     else if(inputType === 'upload'){
-    
-      inputNode =           
-      <Upload
+      inputNode = <Upload
         listType="picture"
-        // onChange = {onChange}
-        beforeUpload={beforeUpload}
+        showUploadList={{
+          showDownloadIcon: false,
+        }}
+        onChange={(file)=>{
+          if(file.status !== 'uploading') {
+            const fileListLength = file['fileList'].length;
+            fileListLength < 1 ? setHasImg(true) : setHasImg(false)
+          }
+        }}
+        defaultFileList={[{
+          uid: record.id,
+          name: record.img_url,
+          status: 'done',
+          url: `http://localhost:5000/uploads/${record.img_url}`,
+        }]}
         maxCount={1}
-        defaultFileList={
-          [{
-            uid: record.id,
-            name: record.img_url,
-            status: 'done',
-            url: `http://localhost:5000/uploads/${record.img_url}`,
-            thumbUrl: `http://localhost:5000/uploads/${record.img_url}`,
-
-          }]
-        }
+        beforeUpload={false}
       >
-        {/* <Button icon={<UploadOutlined />}>Upload</Button> */}
+        {hasImg &&<Button icon={<UploadOutlined />}>이미지 추가</Button>}
       </Upload>
     }
     else if(inputType === 'select'){
@@ -294,11 +281,10 @@ const AdminAllMenu = (props) => {
           width: '100%',
         }}
         options={options}
-        />
+      />
     }else{
       inputNode = <Input />
     }
-    // let inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
     return (
       <td {...restProps}>
         {editing ? (
