@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { Form, Image, Input, InputNumber, message, Popconfirm, Select, Space, Table, Tag, Typography, Upload } from 'antd';
+import { Button, Form, Image, Input, InputNumber, message, Popconfirm, Select, Space, Table, Tag, Typography, Upload } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
 
@@ -227,13 +228,13 @@ const AdminAllMenu = (props) => {
   };
 
   const [fileList, setFileList] = useState([]);
-  const onChange = ({ fileList: newFileList }) => {
-    console.log('실행됨')
-    setFileList(newFileList);
-  };
+  // const onChange = ({ fileList: newFileList }) => {
+  //   console.log('실행됨')
+  //   setFileList(newFileList);
+  // };
   const beforeUpload = (file) => {
     // return false;
-    setFileList(fileList.concat(file));
+    // setFileList(fileList.concat(file));
     return false;	// 파일 선택시 바로 업로드 하지 않고 후에 한꺼번에 전송하기 위함
         
   }
@@ -263,25 +264,23 @@ const AdminAllMenu = (props) => {
     
       inputNode =           
       <Upload
-        listType="picture-card"
-        fileList={fileList}
-        onChange = {onChange}
+        listType="picture"
+        // onChange = {onChange}
         beforeUpload={beforeUpload}
+        maxCount={1}
         defaultFileList={
-          [
-            {
-              uid: record.id,
-              name: record.img_url,
-              status: 'done',
-              // response: 'Server Error 500',
-              // custom error message to show
-              url: `http://localhost:5000/uploads/${record.img_url}`,
-            },
-          ]
+          [{
+            uid: record.id,
+            name: record.img_url,
+            status: 'done',
+            url: `http://localhost:5000/uploads/${record.img_url}`,
+            thumbUrl: `http://localhost:5000/uploads/${record.img_url}`,
+
+          }]
         }
       >
-      {fileList.length < 1 && '+ Upload'}
-    </Upload>
+        {/* <Button icon={<UploadOutlined />}>Upload</Button> */}
+      </Upload>
     }
     else if(inputType === 'select'){
       inputNode = <Select           
