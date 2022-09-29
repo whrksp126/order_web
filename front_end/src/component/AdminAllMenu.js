@@ -230,6 +230,8 @@ const AdminAllMenu = (props) => {
     );
   };
 
+
+
   const EditableCell = ({
     editing,
     dataIndex,
@@ -242,6 +244,14 @@ const AdminAllMenu = (props) => {
   }) => {
     let inputNode;
     const [hasImg, setHasImg] = useState(false);
+    const [selectId, setSelectId] = useState();
+    const defaultValue = () => {
+      setSelectId([...new Set(record.lists.map(item => item.id))])
+      return [...new Set(record.lists.map(item => item.id))]
+    }
+    const selectOnChnage = (value) => {
+      setSelectId(value);
+    }
     if(inputType === 'number'){
       inputNode = <InputNumber />
     }
@@ -270,16 +280,17 @@ const AdminAllMenu = (props) => {
       </Upload>
     }
     else if(inputType === 'select'){
+      // setSelectId([...new Set(record.lists.map(item => item.id))])
       inputNode = <Select           
         mode="multiple"
         showArrow
         tagRender={tagRender}
         showSearch
         optionFilterProp="label"
-        defaultValue={[...new Set(record.lists.map(item => item.id))]}
-        style={{
-          width: '100%',
-        }}
+        value={selectId}
+        onChange={selectOnChnage}
+        defaultValue={defaultValue}
+        style={{ width: '100%'}}
         options={options}
       />
     }else{
@@ -314,6 +325,10 @@ const AdminAllMenu = (props) => {
       const row = await form.validateFields();
       const newData = [...data];
       const index = newData.findIndex((item) => key === item.key);
+
+      console.log(row)
+      console.log(newData)
+      console.log(index)
 
       if (index > -1) {
         const item = newData[index];
