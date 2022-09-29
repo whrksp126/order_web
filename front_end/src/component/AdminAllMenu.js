@@ -21,6 +21,7 @@ const AdminAllMenu = (props) => {
       price: '',
       img_url: '',
       lists: '',
+      description: '',
         ...record,
     });
     setEditingKey(record.key);
@@ -230,8 +231,6 @@ const AdminAllMenu = (props) => {
     );
   };
 
-
-
   const EditableCell = ({
     editing,
     dataIndex,
@@ -244,14 +243,6 @@ const AdminAllMenu = (props) => {
   }) => {
     let inputNode;
     const [hasImg, setHasImg] = useState(false);
-    const [selectId, setSelectId] = useState();
-    const defaultValue = () => {
-      setSelectId([...new Set(record.lists.map(item => item.id))])
-      return [...new Set(record.lists.map(item => item.id))]
-    }
-    const selectOnChnage = (value) => {
-      setSelectId(value);
-    }
     if(inputType === 'number'){
       inputNode = <InputNumber />
     }
@@ -280,17 +271,16 @@ const AdminAllMenu = (props) => {
       </Upload>
     }
     else if(inputType === 'select'){
-      // setSelectId([...new Set(record.lists.map(item => item.id))])
       inputNode = <Select           
         mode="multiple"
         showArrow
         tagRender={tagRender}
         showSearch
         optionFilterProp="label"
-        value={selectId}
-        onChange={selectOnChnage}
-        defaultValue={defaultValue}
-        style={{ width: '100%'}}
+        defaultValue={[...new Set(record.lists.map(item => item.id))]}
+        style={{
+          width: '100%',
+        }}
         options={options}
       />
     }else{
@@ -304,12 +294,12 @@ const AdminAllMenu = (props) => {
             style={{
               margin: 0,
             }}
-            rules={[
-              {
-                required: true,
-                message: `Please Input ${title}!`,
-              },
-            ]}
+            // rules={[
+            //   {
+            //     required: true,
+            //     message: `Please Input ${title}!`,
+            //   },
+            // ]}
           >
             {inputNode}
           </Form.Item>
@@ -321,28 +311,37 @@ const AdminAllMenu = (props) => {
   };
   
   const save = async (key) => {
-    try {
-      const row = await form.validateFields();
-      const newData = [...data];
-      const index = newData.findIndex((item) => key === item.key);
-
-      console.log(row)
-      console.log(newData)
-      console.log(index)
-
-      if (index > -1) {
-        const item = newData[index];
-        newData.splice(index, 1, { ...item, ...row });
-        setData(newData);
-        setEditingKey('');
-      } else {
-        newData.push(row);
-        setData(newData);
-        setEditingKey('');
-      }
-    } catch (errInfo) {
-      console.log('Validate Failed:', errInfo);
+    console.log('1',form);
+    console.log('2', await form.validateFields());
+    const edit_data = await form.validateFields();
+    const edit_menu_name = edit_data['name'];
+    const edit_menu_price = edit_data['price'];
+    const edit_menu_description = edit_data['description'];
+    const edit_menu_img_url = edit_data['img_url'];
+    const edit_menu_list = edit_data['list'];
+    if(edit_menu_list === undefined) {
+      edit_menu_list = data_list[key]['lists'];
     }
+    console.log(edit_menu_list);
+
+    // try {
+    //   const row = await form.validateFields();
+    //   const newData = [...data];
+    //   const index = newData.findIndex((item) => key === item.key);
+
+    //   if (index > -1) {
+    //     const item = newData[index];
+    //     newData.splice(index, 1, { ...item, ...row });
+    //     setData(newData);
+    //     setEditingKey('');
+    //   } else {
+    //     newData.push(row);
+    //     setData(newData);
+    //     setEditingKey('');
+    //   }
+    // } catch (errInfo) {
+    //   console.log('Validate Failed:', errInfo);
+    // }
   };
 
   const cancel = () => {
