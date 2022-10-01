@@ -311,18 +311,34 @@ const AdminAllMenu = (props) => {
   };
   
   const save = async (key) => {
-    console.log('1',form);
-    console.log('2', await form.validateFields());
-    const edit_data = await form.validateFields();
-    const edit_menu_name = edit_data['name'];
-    const edit_menu_price = edit_data['price'];
-    const edit_menu_description = edit_data['description'];
-    const edit_menu_img_url = edit_data['img_url'];
-    const edit_menu_list = edit_data['list'];
-    if(edit_menu_list === undefined) {
-      edit_menu_list = data_list[key]['lists'];
+    try{
+      const edit_data = await form.validateFields();
+      if(edit_data['list'] === undefined) {
+        edit_data['list'] = data_list[key]['lists']
+      }
+      let newData = data_list;
+      const index = newData.findIndex((item) => key === item.key);
+      if( index > -1){
+        const item = newData[index];
+        newData.splice(index, 1, {...item, ...edit_data});
+        setData(newData);
+        setEditingKey('');
+        console.log('if 성공')
+      }else{
+        newData.push(edit_data);
+        setData(newData);
+        setEditingKey('');
+        console.log('else 성공')
+      }
+    }catch(errInfo){
+      console.log('catch')
+      console.log('Validate Failed:', errInfo);
     }
-    console.log(edit_menu_list);
+    // console.log(edit_data['name'])
+    // console.log(edit_data['price'])
+    // console.log(edit_data['description'])
+    // console.log(edit_data['img_url'])
+    // console.log(edit_data['list'])
 
     // try {
     //   const row = await form.validateFields();
