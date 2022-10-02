@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Form, Image, Input, InputNumber, message, Popconfirm, Select, Space, Table, Tag, Typography, Upload } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 
@@ -149,33 +149,48 @@ const AdminAllMenu = (props) => {
   ];
 
   let data_list = [];
-  if(props.menusLists !== null){
-    props.menusLists.forEach((menu, index) =>  {
-      let list_name_array = []
-      if(menu.menu_list.length > 0){
-        menu.menu_list.forEach((list) => {
-          list_name_array.push({
-            name : list.list_name,
-            id : list.list_id,
-            color : list.list_color,
+  const [data, setData] = useState([]);
+  useEffect(()=> {
+    if(props.menusLists !== null){
+      props.menusLists.forEach((menu, index) =>  {
+        let list_name_array = []
+        if(menu.menu_list.length > 0){
+          menu.menu_list.forEach((list) => {
+            list_name_array.push({
+              name : list.list_name,
+              id : list.list_id,
+              color : list.list_color,
+            })
           })
+        }      
+        data_list.push({
+          "key": index,
+          "id": menu.id,
+          "name": menu.name,
+          "price": menu.price,
+          "img_url": menu.img_url,
+          "description": menu.description,
+          
+          "lists": list_name_array
         })
-      }      
-      data_list.push({
-        "key": index,
-        "id": menu.id,
-        "name": menu.name,
-        "price": menu.price,
-        "img_url": menu.img_url,
-        "description": menu.description,
-        
-        "lists": list_name_array
+        // data_list.push({
+        //   "key": index,
+        //   "id": menu.id,
+        //   "name": menu.name,
+        //   "price": menu.price,
+        //   "img_url": menu.img_url,
+        //   "description": menu.description,
+          
+        //   "lists": list_name_array
+        // })
+        list_name_array = []
       })
-      list_name_array = []
-    })
-  }
+      setData(data_list)
+      data_list = []
+    }
 
-  const [data, setData] = useState(data_list);
+  },[props.menusLists])
+
 
 
   const handleDelete = (data) => {
@@ -314,21 +329,19 @@ const AdminAllMenu = (props) => {
     try{
       const edit_data = await form.validateFields();
       if(edit_data['list'] === undefined) {
-        edit_data['list'] = data_list[key]['lists']
+        edit_data['list'] = data[key]['lists']
       }
-      let newData = data_list;
+      let newData = data;
       const index = newData.findIndex((item) => key === item.key);
       if( index > -1){
         const item = newData[index];
         newData.splice(index, 1, {...item, ...edit_data});
         setData(newData);
         setEditingKey('');
-        console.log('if 성공')
       }else{
         newData.push(edit_data);
         setData(newData);
         setEditingKey('');
-        console.log('else 성공')
       }
     }catch(errInfo){
       console.log('catch')
@@ -399,7 +412,7 @@ const AdminAllMenu = (props) => {
         <Table 
           components={{ body: { cell: EditableCell, }}} 
           columns={mergedColumns} 
-          dataSource={data_list} 
+          dataSource={data} 
           onChange={handleChange} 
           rowClassName="editable-row"
           />
