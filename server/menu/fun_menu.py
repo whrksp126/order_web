@@ -139,16 +139,39 @@ def fun_delete_menu(menuId):
     print("eeeeee delete_menu eeeeee", e)
     
 # 메뉴 수정
-def fun_edit_menu(user_id, menu_id, name, price, image, description, menu_list):
+def fun_edit_menu(user_id, menu_id, name, price, description, menu_list, image):
   try:
-    print('user_id,',user_id)
-    print('menu_id,',menu_id)
-    print('name,',name)
-    print('price,',price)
-    print('image,',image)
-    print('description,',description)
-    print('menu_list,',menu_list)
-    # menu = db.session.query(Menu).filter(id == menuId).first()
+    menu = db.session.query(Menu).filter(Menu.id == menu_id).first()
+    print(menu.price)
+    print(menu.img_url)
+    print(menu.description)
+    menu.name = name;
+    menu.price = price;
+    if description != 'null':
+      menu.description = description;
+    
+    r_menu_list = db.session.query(R_menu_list) \
+      .filter(R_menu_list.menu_id == menu_id) \
+      .all()
+    for target_menu_list in r_menu_list:
+      db.session.delete(target_menu_list)
+    for list_id in menu_list:
+      list_id = int(list_id)
+      fun_add_r_menu_list(menu_id, list_id, user_id)
+    
+    db.session.commit()
+
+
+    if image == None:
+      print('이미지 파일 변경 없음')
+    
+    # print('user_id,',user_id)
+    # print('menu_id,',menu_id)
+    # print('name,',name)
+    # print('price,',price)
+    # print('image,',image)
+    # print('description,',description)
+    # print('menu_list,',menu_list)
     
     # 해당 유저의 이미지 폴더에 같은 이미지 명 제거 후 새로운 이미지 저장하기
     # r_menu_list에 target menu_id를 삭제하고 수정된 내용을 추가한다.

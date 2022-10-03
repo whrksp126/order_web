@@ -178,16 +178,23 @@ def delete_menu():
       status=200
     )
   
+# 메뉴 수정하기
 @bp.route('/edit_menu', methods=['POST'])
 @login_required
 def edit_menu():
+  
   user_id = current_user.id
-  print('#######,', request.form)
   menu_id = request.form['id']
   name = request.form['name']
   price = int(request.form['price'])
   description = request.form.get('description', None)
-  menu_list = request.form.get('menu_list', None)
-  image = request.files['file']
+  menu_list = request.form.get('menu_list', None).split(',')
   
-  fun_edit_menu(user_id, menu_id, name, price, image, description, menu_list)
+  print(type(menu_list), menu_list)
+  print('######,', request.form)
+  if 'file' not in request.files:
+    image = None
+  else:
+    image = request.files['file']
+    
+  fun_edit_menu(user_id, menu_id, name, price, description, menu_list, image)

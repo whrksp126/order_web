@@ -331,21 +331,25 @@ const AdminAllMenu = (props) => {
       
       
       if(edit_data['lists'].length > 0){
-        edit_data['lists'].forEach((list_id, index) => {
+        edit_data['lists'].forEach((list, index) => {
           props.menuList.forEach((item) => {
-            if(item.id === list_id){
-              let new_list_data = {
-                color : item.color,
-                id : item.id,
-                name : item.name
-              }
-              edit_data['lists'][index] = new_list_data
+            if(item.id === list['id']){
+              edit_data['lists'][index] = list['id']
             }
+
+            // if(item.id === list_id){
+            //   let new_list_data = {
+            //     color : item.color,
+            //     id : item.id,
+            //     name : item.name
+            //   }
+            //   edit_data['lists'][index] = new_list_data
+            // }
           })
         })
       }
       target_save = edit_data;
-
+      console.log('target_edit,',target_edit, 'target_save,',target_save)
       compare_edit_to_save(target_edit ,target_save)
 
 
@@ -369,12 +373,13 @@ const AdminAllMenu = (props) => {
       console.log('Validate Failed:', errInfo);
     }
   };
-
-
+  
+  
   const compare_edit_to_save = (edit, save) => {
     console.log('edit,',edit)
     console.log('save,',save)
-
+    
+    let formData = new FormData();
     if(edit['name'] !== save['name']){
       console.log('이름이 달라요')
     }
@@ -383,6 +388,10 @@ const AdminAllMenu = (props) => {
     }
     if(edit['img_url'] !== save['img_url']){
       console.log('이미지가 달라요')
+      if(save['img_url']['fileList'].length > 0){
+        console.log('업로드된 이미지가 있어요')
+        formData.append('file', save['img_url']['fileList'][0].originFileObj)
+      }
     }
     if(edit['description'] !== save['description']){
       console.log('설명이 달라요')
@@ -391,10 +400,7 @@ const AdminAllMenu = (props) => {
       console.log('리스트가 달라요')
     }
     // const input_List = { "menu_id" : data.id }
-
-    console.log("save['img_url'],",save['img_url']['fileList'][0].originFileObj)
-
-    let formData = new FormData();
+    console.log('save["lists"],',typeof(save['lists']),save['lists'])
     let MenuData = {
       id: edit['id'],
       name: save['name'], 
@@ -402,13 +408,9 @@ const AdminAllMenu = (props) => {
       description: save['description'],
       menu_list: save['lists'],
     }
-    formData.append('file', save['img_url']['fileList'][0].originFileObj)
-    // formData.append('file', save.image[0].originFileObj)
     for(let key in MenuData) {
     	formData.append(key, MenuData[key]);
     }
-    console.log('formData,,',formData)
-
     axios.post("/admin/edit_menu", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -425,7 +427,6 @@ const AdminAllMenu = (props) => {
     .catch((err) => {
       console.log(err)
     })
-
 
     target_save = null;
     target_edit = null;

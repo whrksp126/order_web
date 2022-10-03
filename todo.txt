@@ -108,3 +108,6 @@
       for menu, r_menu_list, menu_list in results:
         print(menu.id, menu.name, menu.price, menu_list.id, menu_list.name)
     
+    7. 메뉴 데이터 수정 api 만들기
+
+    8. 메뉴 이미지 수정 api 만들기
