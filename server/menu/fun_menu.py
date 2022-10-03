@@ -1,3 +1,4 @@
+from tkinter import E
 from models import Menu, Menu_list, R_menu_list
 from routes import db
 
@@ -136,3 +137,24 @@ def fun_delete_menu(menuId):
   
   except Exception as e:
     print("eeeeee delete_menu eeeeee", e)
+    
+# 메뉴 수정
+def fun_edit_menu(user_id, menu_id, name, price, image, description, menu_list):
+  try:
+    print('user_id,',user_id)
+    print('menu_id,',menu_id)
+    print('name,',name)
+    print('price,',price)
+    print('image,',image)
+    print('description,',description)
+    print('menu_list,',menu_list)
+    # menu = db.session.query(Menu).filter(id == menuId).first()
+    
+    # 해당 유저의 이미지 폴더에 같은 이미지 명 제거 후 새로운 이미지 저장하기
+    # r_menu_list에 target menu_id를 삭제하고 수정된 내용을 추가한다.
+    
+    # user.age += 1
+    # session.commit()
+  except Exception as e:
+    print("eeeeee eidt_menu eeeeee", e)
+    

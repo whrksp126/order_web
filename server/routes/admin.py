@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, current_user, logout_user, login_required
 from menu.fun_menu import fun_call_all_menus, fun_call_menu, \
   fun_call_all_menus, fun_add_r_menu_list, fun_add_menu_list, \
-  fun_call_all_menu_list, fun_add_menu, fun_delete_menu
+  fun_call_all_menu_list, fun_add_menu, fun_delete_menu, fun_edit_menu
 from . import *
 from werkzeug.utils import secure_filename
 import os
@@ -177,3 +177,17 @@ def delete_menu():
       category='success',
       status=200
     )
+  
+@bp.route('/edit_menu', methods=['POST'])
+@login_required
+def edit_menu():
+  user_id = current_user.id
+  print('#######,', request.form)
+  menu_id = request.form['id']
+  name = request.form['name']
+  price = int(request.form['price'])
+  description = request.form.get('description', None)
+  menu_list = request.form.get('menu_list', None)
+  image = request.files['file']
+  
+  fun_edit_menu(user_id, menu_id, name, price, image, description, menu_list)

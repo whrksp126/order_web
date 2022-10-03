@@ -5,6 +5,10 @@ import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
 
+
+let target_edit;
+let target_save;
+
 const AdminAllMenu = (props) => {
 
   const [form] = Form.useForm();
@@ -13,9 +17,11 @@ const AdminAllMenu = (props) => {
   const [sortedInfo, setSortedInfo] = useState({});
   const [editingKey, setEditingKey] = useState('');
 
+  
   const isEditing = (record) => record.key === editingKey;
 
   const edit = (record) => {
+    target_edit = record;
     form.setFieldsValue({
       name: '',
       price: '',
@@ -148,8 +154,8 @@ const AdminAllMenu = (props) => {
     },
   ];
 
-  let data_list = [];
   const [data, setData] = useState([]);
+  let data_list = [];
   useEffect(()=> {
     if(props.menusLists !== null){
       props.menusLists.forEach((menu, index) =>  {
@@ -173,22 +179,11 @@ const AdminAllMenu = (props) => {
           
           "lists": list_name_array
         })
-        // data_list.push({
-        //   "key": index,
-        //   "id": menu.id,
-        //   "name": menu.name,
-        //   "price": menu.price,
-        //   "img_url": menu.img_url,
-        //   "description": menu.description,
-          
-        //   "lists": list_name_array
-        // })
         list_name_array = []
       })
-      setData(data_list)
-      data_list = []
+      setData(data_list);
+      data_list = [];
     }
-
   },[props.menusLists])
 
 
@@ -228,9 +223,8 @@ const AdminAllMenu = (props) => {
       event.preventDefault();
       event.stopPropagation();
     };
-  
     const color = options.find(option => option.value === value).color;
-    
+  
     return (
       <Tag
         color={color}
@@ -327,10 +321,34 @@ const AdminAllMenu = (props) => {
   
   const save = async (key) => {
     try{
-      const edit_data = await form.validateFields();
-      if(edit_data['list'] === undefined) {
-        edit_data['list'] = data[key]['lists']
+      let edit_data = await form.validateFields();
+      edit_data.lists = edit_data.list
+      delete edit_data.list
+
+      if(edit_data['lists'] === undefined) {
+        edit_data['lists'] = data[key]['lists']
       }
+      
+      
+      if(edit_data['lists'].length > 0){
+        edit_data['lists'].forEach((list_id, index) => {
+          props.menuList.forEach((item) => {
+            if(item.id === list_id){
+              let new_list_data = {
+                color : item.color,
+                id : item.id,
+                name : item.name
+              }
+              edit_data['lists'][index] = new_list_data
+            }
+          })
+        })
+      }
+      target_save = edit_data;
+
+      compare_edit_to_save(target_edit ,target_save)
+
+
       let newData = data;
       const index = newData.findIndex((item) => key === item.key);
       if( index > -1){
@@ -338,40 +356,80 @@ const AdminAllMenu = (props) => {
         newData.splice(index, 1, {...item, ...edit_data});
         setData(newData);
         setEditingKey('');
+        
+        console.log('if 성공')
       }else{
         newData.push(edit_data);
         setData(newData);
         setEditingKey('');
+        console.log('else 성공')
       }
     }catch(errInfo){
       console.log('catch')
       console.log('Validate Failed:', errInfo);
     }
-    // console.log(edit_data['name'])
-    // console.log(edit_data['price'])
-    // console.log(edit_data['description'])
-    // console.log(edit_data['img_url'])
-    // console.log(edit_data['list'])
-
-    // try {
-    //   const row = await form.validateFields();
-    //   const newData = [...data];
-    //   const index = newData.findIndex((item) => key === item.key);
-
-    //   if (index > -1) {
-    //     const item = newData[index];
-    //     newData.splice(index, 1, { ...item, ...row });
-    //     setData(newData);
-    //     setEditingKey('');
-    //   } else {
-    //     newData.push(row);
-    //     setData(newData);
-    //     setEditingKey('');
-    //   }
-    // } catch (errInfo) {
-    //   console.log('Validate Failed:', errInfo);
-    // }
   };
+
+
+  const compare_edit_to_save = (edit, save) => {
+    console.log('edit,',edit)
+    console.log('save,',save)
+
+    if(edit['name'] !== save['name']){
+      console.log('이름이 달라요')
+    }
+    if(edit['price'] !== save['price']){
+      console.log('가격이 달라요')
+    }
+    if(edit['img_url'] !== save['img_url']){
+      console.log('이미지가 달라요')
+    }
+    if(edit['description'] !== save['description']){
+      console.log('설명이 달라요')
+    }
+    if(edit['lists'] !== save['lists']){
+      console.log('리스트가 달라요')
+    }
+    // const input_List = { "menu_id" : data.id }
+
+    console.log("save['img_url'],",save['img_url']['fileList'][0].originFileObj)
+
+    let formData = new FormData();
+    let MenuData = {
+      id: edit['id'],
+      name: save['name'], 
+      price: save['price'],
+      description: save['description'],
+      menu_list: save['lists'],
+    }
+    formData.append('file', save['img_url']['fileList'][0].originFileObj)
+    // formData.append('file', save.image[0].originFileObj)
+    for(let key in MenuData) {
+    	formData.append(key, MenuData[key]);
+    }
+    console.log('formData,,',formData)
+
+    axios.post("/admin/edit_menu", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      }
+    })
+    .then((res)=> {
+      if(res.data.status === 200){
+        message.success(res.data.message);
+      }
+      if(res.data.status === 404){
+        message.error(res.data.message)
+      }
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+
+
+    target_save = null;
+    target_edit = null;
+  }
 
   const cancel = () => {
     setEditingKey('');
