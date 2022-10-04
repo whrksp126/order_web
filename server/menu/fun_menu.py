@@ -1,7 +1,7 @@
 from tkinter import E
 from models import Menu, Menu_list, R_menu_list
-from routes import db
-
+from routes import db, app
+import os
 
 # 메뉴 추가 기능 함수
 def fun_add_menu(name, price, img_url, description, user_id):
@@ -39,7 +39,7 @@ def fun_add_r_menu_list(menu_id, list_id, user_id):
     new_r_menu_list = R_menu_list(list_id=list_id, menu_id=menu_id, user_id=user_id)
     db.session.add(new_r_menu_list)
     db.session.commit()
-    db.session.close()
+    # db.session.close()
   except Exception as e:
     print("eeeeee fun_add_r_menu_list eeeeee,", e)
 
@@ -47,6 +47,15 @@ def fun_add_r_menu_list(menu_id, list_id, user_id):
 def fun_call_all_menus(user_id):
   menus = []
   try:
+    print('여기여기여기여기여깅겨이겨이겨이겨이겨이겨익ㅇ')
+    test_menu = db.session.query(Menu.id,Menu.name, Menu.price, Menu.description, Menu_list.id, Menu_list.name, Menu_list.color).\
+      outerjoin(R_menu_list, Menu.id == R_menu_list.menu_id).\
+      outerjoin(Menu_list, R_menu_list.list_id == Menu_list.id).\
+      all()
+      
+    print('test_menu,',test_menu);
+    for menu in test_menu:
+      print('menu,',menu)
     all_menus = db.session.query(Menu, R_menu_list, Menu_list)\
       .select_from(Menu)\
       .join(R_menu_list)\
@@ -120,7 +129,7 @@ def fun_call_all_menu_list(user_id):
     print("eeeeee fun_call_all_menu_list eeeeee", e)
     
 # 메뉴 삭제
-def fun_delete_menu(menuId):
+def fun_delete_menu(menuId, user_id):
   try:
     # pk로 연결된 경우 저장된 연결된 데이터 먼저 제거한다.
     r_menu_list = db.session.query(R_menu_list) \
@@ -132,6 +141,9 @@ def fun_delete_menu(menuId):
     menu = db.session.query(Menu) \
       .filter(Menu.id == menuId) \
       .first()
+    
+    fun_delete_server_image(user_id, menu.img_url)
+    
     db.session.delete(menu)
     db.session.commit()
   
@@ -142,13 +154,13 @@ def fun_delete_menu(menuId):
 def fun_edit_menu(user_id, menu_id, name, price, description, menu_list, image):
   try:
     menu = db.session.query(Menu).filter(Menu.id == menu_id).first()
-    print(menu.price)
-    print(menu.img_url)
-    print(menu.description)
     menu.name = name;
     menu.price = price;
+    if image != None:
+      menu.img_url = image;
     if description != 'null':
-      menu.description = description;
+      menu.description = description
+    db.session.commit()
     
     r_menu_list = db.session.query(R_menu_list) \
       .filter(R_menu_list.menu_id == menu_id) \
@@ -160,24 +172,26 @@ def fun_edit_menu(user_id, menu_id, name, price, description, menu_list, image):
       fun_add_r_menu_list(menu_id, list_id, user_id)
     
     db.session.commit()
-
-
-    if image == None:
-      print('이미지 파일 변경 없음')
     
-    # print('user_id,',user_id)
-    # print('menu_id,',menu_id)
-    # print('name,',name)
-    # print('price,',price)
-    # print('image,',image)
-    # print('description,',description)
-    # print('menu_list,',menu_list)
-    
-    # 해당 유저의 이미지 폴더에 같은 이미지 명 제거 후 새로운 이미지 저장하기
-    # r_menu_list에 target menu_id를 삭제하고 수정된 내용을 추가한다.
-    
-    # user.age += 1
-    # session.commit()
   except Exception as e:
     print("eeeeee eidt_menu eeeeee", e)
+
+
+
+
+
+
+
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+
+def allowed_file(filename):
+  return '.' in filename and \
+    filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
     
+# 서버 경로에 이미 동일한 이미지파일이 있을 경우 삭제
+def fun_delete_server_image(user_id, image_name):
+  path_menu_images = app.config['UPLOAD_FOLDER'] + 'menu_images/' + str(user_id)
+
+  # DB에서 불러온 이미지 파일명과 동일한 서버의 이미지를 삭제함
+  if os.path.isfile(path_menu_images + '/' + image_name):
+    os.remove(path_menu_images + '/' + image_name)

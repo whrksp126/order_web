@@ -7,7 +7,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, current_user, logout_user, login_required
 from menu.fun_menu import fun_call_all_menus, fun_call_menu, \
   fun_call_all_menus, fun_add_r_menu_list, fun_add_menu_list, \
-  fun_call_all_menu_list, fun_add_menu, fun_delete_menu, fun_edit_menu
+  fun_call_all_menu_list, fun_add_menu, fun_delete_menu, fun_edit_menu, \
+  fun_delete_server_image
+from models import Menu
 from . import *
 from werkzeug.utils import secure_filename
 import os
@@ -169,9 +171,7 @@ def delete_menu():
 
   json_data = request.get_json()
   menu_id = json_data['menu_id']
-  print("user_id,",user_id , "menu_id,", menu_id)
-  
-  fun_delete_menu(menu_id)
+  fun_delete_menu(menu_id, user_id)
   return jsonify(
       message='메뉴를 삭제 하였습니다.',
       category='success',
@@ -190,11 +190,28 @@ def edit_menu():
   description = request.form.get('description', None)
   menu_list = request.form.get('menu_list', None).split(',')
   
-  print(type(menu_list), menu_list)
-  print('######,', request.form)
   if 'file' not in request.files:
     image = None
   else:
     image = request.files['file']
+  
+  if image != None:
+    menu = Menu.query.filter(Menu.id == menu_id).first()
+    menu.img_url
+    
+    path_menu_images = app.config['UPLOAD_FOLDER'] + 'menu_images/' + str(user_id)
+    
+    fun_delete_server_image(user_id, menu.img_url)
+    
+    # 유저에 따라 이미지를 저장함
+    if image and allowed_file(image.filename):
+      os.makedirs(path_menu_images, exist_ok=True)
+      image.save(os.path.join(path_menu_images, image.filename))
+      image = image.filename
     
   fun_edit_menu(user_id, menu_id, name, price, description, menu_list, image)
+  return jsonify(
+    message='메뉴를 수정 하였습니다.',
+    category='success',
+    status=200
+  )
