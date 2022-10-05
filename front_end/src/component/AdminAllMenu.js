@@ -16,6 +16,7 @@ const AdminAllMenu = (props) => {
   const [filteredInfo, setFilteredInfo] = useState({});
   const [sortedInfo, setSortedInfo] = useState({});
   const [editingKey, setEditingKey] = useState('');
+  const [data, setData] = useState([]);
 
   
   const isEditing = (record) => record.key === editingKey;
@@ -154,9 +155,8 @@ const AdminAllMenu = (props) => {
     },
   ];
 
-  const [data, setData] = useState([]);
-  let data_list = [];
   useEffect(()=> {
+    let data_list = [];
     if(props.menusLists !== null){
       props.menusLists.forEach((menu, index) =>  {
         let list_name_array = []
@@ -188,12 +188,14 @@ const AdminAllMenu = (props) => {
 
 
 
-  const handleDelete = (data) => {
-    const input_List = { "menu_id" : data.id }
+  const handleDelete = (target_data) => {
+    const input_List = { "menu_id" : target_data.id }
     axios.post("/admin/delete_menu", input_List)
     .then((res)=> {
       if(res.data.status === 200){
         message.success(res.data.message);
+        const newData = data.filter((item) => item.key !== target_data.key);
+        setData(newData)    
       }
       if(res.data.status === 404){
         message.error(res.data.message)
@@ -218,7 +220,7 @@ const AdminAllMenu = (props) => {
   }
 
   const tagRender = (props) => {
-    const { label, value, closable, onClose } = props;
+    const { label, value, closable, onClose, } = props;
     const onPreventMouseDown = (event) => {
       event.preventDefault();
       event.stopPropagation();
@@ -252,6 +254,7 @@ const AdminAllMenu = (props) => {
   }) => {
     let inputNode;
     const [hasImg, setHasImg] = useState(false);
+    const [saveList, setSaveList] = useState();
     if(inputType === 'number'){
       inputNode = <InputNumber />
     }
@@ -280,13 +283,17 @@ const AdminAllMenu = (props) => {
       </Upload>
     }
     else if(inputType === 'select'){
+      let default_value = [...new Set(record.lists.map(item => item.id))]
       inputNode = <Select           
         mode="multiple"
         showArrow
         tagRender={tagRender}
         showSearch
         optionFilterProp="label"
-        defaultValue={[...new Set(record.lists.map(item => item.id))]}
+        defaultValue={default_value}
+        onChange={(value)=> {
+          setSaveList(value)
+        }}
         style={{
           width: '100%',
         }}
@@ -324,37 +331,43 @@ const AdminAllMenu = (props) => {
       let edit_data = await form.validateFields();
       edit_data.lists = edit_data.list
       delete edit_data.list
-
       if(edit_data['lists'] === undefined) {
         edit_data['lists'] = data[key]['lists']
       }
       
-      
-      if(edit_data['lists'].length > 0){
-        edit_data['lists'].forEach((list, index) => {
-          props.menuList.forEach((item) => {
-            if(item.id === list['id']){
-              edit_data['lists'][index] = list['id']
-            }
+      // if(edit_data['lists'].length > 0){
+      //   edit_data['lists'].forEach((list, index) => {
+      //     props.menuList.forEach((item) => {
+      //       if(item.id === list['id']){
+      //         edit_data['lists'][index] = list['id']
+      //         console.log('item,',item)
+      //       }
+      //     })
+      //   })
+      // }
 
-            // if(item.id === list_id){
-            //   let new_list_data = {
-            //     color : item.color,
-            //     id : item.id,
-            //     name : item.name
-            //   }
-            //   edit_data['lists'][index] = new_list_data
-            // }
+      target_save = edit_data;
+      // compare_edit_to_save(target_edit ,target_save)
+
+      if(edit_data['lists'].length > 0){
+        edit_data['lists'].forEach((list_id, index) => {
+          props.menuList.forEach((item) => {
+            if(item['id'] === list_id){
+              edit_data['lists'][index] = {
+                "id" : item['id'],
+                "name" : item['name'],
+                "color" : item['color'],
+              }
+            }
           })
         })
       }
-      target_save = edit_data;
-      console.log('target_edit,',target_edit, 'target_save,',target_save)
-      compare_edit_to_save(target_edit ,target_save)
-
 
       let newData = data;
       const index = newData.findIndex((item) => key === item.key);
+
+      // props.menuList.id
+
       if( index > -1){
         const item = newData[index];
         newData.splice(index, 1, {...item, ...edit_data});
@@ -363,8 +376,8 @@ const AdminAllMenu = (props) => {
         
         console.log('if 성공')
       }else{
-        newData.push(edit_data);
-        setData(newData);
+        // newData.push(edit_data);
+        // setData(newData);
         setEditingKey('');
         console.log('else 성공')
       }
@@ -376,8 +389,6 @@ const AdminAllMenu = (props) => {
   
   
   const compare_edit_to_save = (edit, save) => {
-    console.log('edit,',edit)
-    console.log('save,',save)
     
     let formData = new FormData();
     if(edit['name'] !== save['name']){
@@ -399,8 +410,6 @@ const AdminAllMenu = (props) => {
     if(edit['lists'] !== save['lists']){
       console.log('리스트가 달라요')
     }
-    // const input_List = { "menu_id" : data.id }
-    console.log('save["lists"],',typeof(save['lists']),save['lists'])
     let MenuData = {
       id: edit['id'],
       name: save['name'], 
@@ -419,6 +428,7 @@ const AdminAllMenu = (props) => {
     .then((res)=> {
       if(res.data.status === 200){
         message.success(res.data.message);
+        setData(res.data.data)
       }
       if(res.data.status === 404){
         message.error(res.data.message)

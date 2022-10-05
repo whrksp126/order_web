@@ -6,7 +6,7 @@ from flask import request, jsonify, Blueprint, send_file, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, current_user, logout_user, login_required
 from menu.fun_menu import fun_call_all_menus, fun_call_menu, \
-  fun_call_all_menus, fun_add_r_menu_list, fun_add_menu_list, \
+  fun_add_r_menu_list, fun_add_menu_list, \
   fun_call_all_menu_list, fun_add_menu, fun_delete_menu, fun_edit_menu, \
   fun_delete_server_image
 from models import Menu
@@ -46,12 +46,6 @@ def add_menu():
       description = None;
     if menu_list == 'undefined':
       menu_list = None;
-    print('user_id,', user_id)
-    print('image,', image)
-    print('name,', name)
-    print('price,', price)
-    print('description,', description)
-    print('menu_list,', menu_list)
     
     # 이미지 서버에 저장
     if image and allowed_file(image.filename):
@@ -189,7 +183,8 @@ def edit_menu():
   price = int(request.form['price'])
   description = request.form.get('description', None)
   menu_list = request.form.get('menu_list', None).split(',')
-  
+  if menu_list[0] == '':
+    menu_list = None;
   if 'file' not in request.files:
     image = None
   else:
@@ -210,8 +205,10 @@ def edit_menu():
       image = image.filename
     
   fun_edit_menu(user_id, menu_id, name, price, description, menu_list, image)
+  menus_lists = fun_call_all_menus(user_id)
   return jsonify(
     message='메뉴를 수정 하였습니다.',
     category='success',
+    data = menus_lists,
     status=200
   )

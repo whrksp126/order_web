@@ -36,6 +36,7 @@ def fun_add_menu_list(name, description, color, user_id):
 # 메뉴와 메뉴리스트 매핑 테이블 만들기
 def fun_add_r_menu_list(menu_id, list_id, user_id):
   try:
+    print('@@@@@@@@@@@@@@@@@@@@@@@@,', list_id, menu_id, user_id)
     new_r_menu_list = R_menu_list(list_id=list_id, menu_id=menu_id, user_id=user_id)
     db.session.add(new_r_menu_list)
     db.session.commit()
@@ -45,51 +46,45 @@ def fun_add_r_menu_list(menu_id, list_id, user_id):
 
 # 현재 사용자의 모든 메뉴와 리스트를 join 하여 호출하기
 def fun_call_all_menus(user_id):
-  menus = []
   try:
-    print('여기여기여기여기여깅겨이겨이겨이겨이겨이겨익ㅇ')
-    test_menu = db.session.query(Menu.id,Menu.name, Menu.price, Menu.description, Menu_list.id, Menu_list.name, Menu_list.color).\
+    all_join_menu = db.session.query(Menu.id.label('id'), \
+      Menu.name.label('name'), Menu.price.label('price'), Menu.img_url.label('img_url'), \
+      Menu.description.label('description'), Menu_list.id.label('list_id'), \
+      Menu_list.name.label('list_name'), Menu_list.color.label('list_color')).\
       outerjoin(R_menu_list, Menu.id == R_menu_list.menu_id).\
       outerjoin(Menu_list, R_menu_list.list_id == Menu_list.id).\
+      filter(Menu.user_id == user_id). \
       all()
-      
-    print('test_menu,',test_menu);
-    for menu in test_menu:
-      print('menu,',menu)
-    all_menus = db.session.query(Menu, R_menu_list, Menu_list)\
-      .select_from(Menu)\
-      .join(R_menu_list)\
-      .join(Menu_list)\
-      .filter(Menu.user_id == user_id)\
-      .all()
-    has_menu = [];
-    new_menu_list = []
-    for menu, r_menu_list, menu_list in all_menus:
-      if not menu.id in has_menu:
-        # 데이터 없으면
-        has_menu.append(menu.id)
-        new_menu_list.append({
-          "list_id": menu_list.id,
-          "list_name": menu_list.name,
-          "list_color": menu_list.color
-        })
-        menus.append({
+    print(all_join_menu)
+    menu_data_list = [];
+    menu_id_list = [];
+    list_data_list = [];
+    for menu in all_join_menu:
+      print(menu)
+      if not menu.id in menu_id_list:
+        menu_id_list.append(menu.id)
+        if menu.list_id != None:
+          list_data_list.append({
+            "list_id": menu.list_id,
+            "list_name": menu.list_name,
+            "list_color": menu.list_color,
+          })
+        menu_data_list.append({
           "id": menu.id,
           "name": menu.name,
           "price": menu.price,
           "img_url": menu.img_url,
           "description": menu.description,
-          "menu_list": new_menu_list
+          "menu_list": list_data_list
         })
       else:
-        # 데이터 있으면
-        [x for x in menus if x['id'] == menu.id][0]['menu_list'].append({
-          "list_id": menu_list.id,
-          "list_name": menu_list.name,
-          "list_color": menu_list.color
+        [x for x in menu_data_list if x['id'] == menu.id][0]['menu_list'].append({
+          "list_id": menu.list_id,
+          "list_name": menu.list_name,
+          "list_color": menu.list_color,
         })
-      new_menu_list = []
-    return menus
+      list_data_list = [];
+    return menu_data_list
   except Exception as e:
     print("eeeeee all_menus eeeeee,", e)
     
@@ -153,6 +148,7 @@ def fun_delete_menu(menuId, user_id):
 # 메뉴 수정
 def fun_edit_menu(user_id, menu_id, name, price, description, menu_list, image):
   try:
+    print('!!!!!!!!!!!!!!!!!!!!!!!!menu_list,',menu_list)
     menu = db.session.query(Menu).filter(Menu.id == menu_id).first()
     menu.name = name;
     menu.price = price;
@@ -167,14 +163,16 @@ def fun_edit_menu(user_id, menu_id, name, price, description, menu_list, image):
       .all()
     for target_menu_list in r_menu_list:
       db.session.delete(target_menu_list)
-    for list_id in menu_list:
-      list_id = int(list_id)
-      fun_add_r_menu_list(menu_id, list_id, user_id)
+    db.session.commit()
+    if menu_list != None:
+      for list_id in menu_list:
+        list_id = int(list_id)
+        fun_add_r_menu_list(menu_id, list_id, user_id)
     
     db.session.commit()
     
   except Exception as e:
-    print("eeeeee eidt_menu eeeeee", e)
+    print("eeeeee edit_menu eeeeee", e)
 
 
 

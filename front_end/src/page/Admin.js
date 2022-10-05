@@ -47,6 +47,7 @@ const Admin = () => {
           setMenus(res.data.menu)
           setMenuList(res.data.menu_list)
           setMenusLists(res.data.menus_lists)
+          console.log('res.data.menus_lists,',res.data.menus_lists)
 
         }
         if(res.data.status === 404){
