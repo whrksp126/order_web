@@ -218,6 +218,11 @@ const AdminAllMenu = (props) => {
       })
     })
   }
+  const [newList, setNewList] = useState();
+  const onCahngeSelect = (value) => {
+    console.log('value!!!!!,',value);
+    setNewList(value)
+  }
 
   const tagRender = (props) => {
     const { label, value, closable, onClose, } = props;
@@ -253,72 +258,87 @@ const AdminAllMenu = (props) => {
     ...restProps
   }) => {
     let inputNode;
+    let common_style = {margin: 0,}
     const [hasImg, setHasImg] = useState(false);
-    const [saveList, setSaveList] = useState();
     if(inputType === 'number'){
-      inputNode = <InputNumber />
+      inputNode = <Form.Item
+        name={dataIndex}
+        style={common_style}
+      >
+        <InputNumber />
+      </Form.Item>
     }
     else if(inputType === 'upload'){
-      inputNode = <Upload
-        listType="picture"
-        showUploadList={{
-          showDownloadIcon: false,
-        }}
-        onChange={(file)=>{
-          if(file.status !== 'uploading') {
-            const fileListLength = file['fileList'].length;
-            fileListLength < 1 ? setHasImg(true) : setHasImg(false)
-          }
-        }}
-        defaultFileList={[{
-          uid: record.id,
-          name: record.img_url,
-          status: 'done',
-          url: `http://localhost:5000/uploads/${record.img_url}`,
-        }]}
-        maxCount={1}
-        beforeUpload={false}
+      inputNode = <Form.Item
+        name={dataIndex}
+        style={common_style}
+        valuePropName
       >
-        {hasImg &&<Button icon={<UploadOutlined />}>이미지 추가</Button>}
-      </Upload>
+        <Upload
+          listType="picture"
+          showUploadList={{
+            showDownloadIcon: false,
+          }}
+          onChange={(file)=>{
+            if(file.status !== 'uploading') {
+              const fileListLength = file['fileList'].length;
+              fileListLength < 1 ? setHasImg(true) : setHasImg(false)
+            }
+          }}
+          defaultFileList={[{
+            uid: record.id,
+            name: record.img_url,
+            status: 'done',
+            url: `http://localhost:5000/uploads/${record.img_url}`,
+          }]}
+          maxCount={1}
+          beforeUpload={false}
+        >
+          {hasImg &&<Button icon={<UploadOutlined />}>이미지 추가</Button>}
+        </Upload>
+      </Form.Item>
     }
     else if(inputType === 'select'){
       let default_value = [...new Set(record.lists.map(item => item.id))]
-      inputNode = <Select           
-        mode="multiple"
-        showArrow
-        tagRender={tagRender}
-        showSearch
-        optionFilterProp="label"
-        defaultValue={default_value}
-        onChange={(value)=> {
-          setSaveList(value)
-        }}
-        style={{
-          width: '100%',
-        }}
-        options={options}
-      />
+      inputNode = <Form.Item
+        name={dataIndex}
+        style={common_style}
+        initialvalues={default_value}
+      >
+        <Select           
+          mode="multiple"
+          showArrow
+          tagRender={tagRender}
+          showSearch
+          optionFilterProp="label"
+          // defaultValue={default_value}
+          onChange={onCahngeSelect}
+          style={{
+            width: '100%',
+          }}
+          options={options}
+        />
+      </Form.Item>
+      
     }else{
-      inputNode = <Input />
+      inputNode = <Form.Item
+        name={dataIndex}
+        style={common_style}
+      >
+        <Input />
+      </Form.Item>
     }
     return (
       <td {...restProps}>
         {editing ? (
-          <Form.Item
-            name={dataIndex}
-            style={{
-              margin: 0,
-            }}
-            // rules={[
-            //   {
-            //     required: true,
-            //     message: `Please Input ${title}!`,
-            //   },
-            // ]}
-          >
-            {inputNode}
-          </Form.Item>
+          // <Form.Item
+          //   name={dataIndex}
+          //   style={{
+          //     margin: 0,
+          //   }}
+          // >
+            inputNode
+          // </Form.Item>
         ) : (
           children
         )}

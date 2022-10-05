@@ -53,7 +53,7 @@ def fun_call_all_menus(user_id):
       Menu_list.name.label('list_name'), Menu_list.color.label('list_color')).\
       outerjoin(R_menu_list, Menu.id == R_menu_list.menu_id).\
       outerjoin(Menu_list, R_menu_list.list_id == Menu_list.id).\
-      filter(Menu.user_id == user_id). \
+      filter(Menu.user_id == user_id).\
       all()
     print(all_join_menu)
     menu_data_list = [];
