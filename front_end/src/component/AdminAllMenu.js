@@ -219,9 +219,12 @@ const AdminAllMenu = (props) => {
     })
   }
   const [newList, setNewList] = useState();
+  // const [listCount, setListCount] = useState(0);
+  let listCount = 0;
+  let is_count = true;
   const onCahngeSelect = (value) => {
-    console.log('value!!!!!,',value);
-    setNewList(value)
+    setNewList(value);
+    listCount = 0;
   }
 
   const tagRender = (props) => {
@@ -230,8 +233,34 @@ const AdminAllMenu = (props) => {
       event.preventDefault();
       event.stopPropagation();
     };
-    const color = options.find(option => option.value === value).color;
-  
+    let color, name;
+    if(label !== undefined) {
+      // 라벨이 있으면
+      color = options.find(option => option.value === value).color;
+      name = label;
+    }else{
+      // 라벨이 없으면
+      if(newList.length > 0){
+        // 새로운 리스트 데이터가 있으면
+        console.log('newList,',newList)
+        if(newList.length > listCount){
+          console.log('newList,', newList, listCount);
+          color = options.find(option => option.value === newList[listCount].id).color;
+          name = options.find(option => option.value === newList[listCount].id).label;
+          console.log('정상,', color, name)
+          listCount = listCount + 1;
+
+        }else{
+          console.log('>>>>>>>>>>>',listCount)
+          is_count = false;
+        }
+      }else{
+        // 새로운 리스트 데이터가 없으면
+        console.log('여기는 안들엉옴')
+      }
+    }
+    console.log('name,',name, 'color,',color)
+    console.log('###########################################')
     return (
       <Tag
         color={color}
@@ -242,7 +271,7 @@ const AdminAllMenu = (props) => {
           marginRight: 3,
         }}
       >
-        {label}
+        {name}
       </Tag>
     );
   };
@@ -303,7 +332,7 @@ const AdminAllMenu = (props) => {
       inputNode = <Form.Item
         name={dataIndex}
         style={common_style}
-        initialvalues={default_value}
+        // initialvalues={default_value}
       >
         <Select           
           mode="multiple"
@@ -311,7 +340,7 @@ const AdminAllMenu = (props) => {
           tagRender={tagRender}
           showSearch
           optionFilterProp="label"
-          // defaultValue={default_value}
+          defaultValue={default_value}
           onChange={onCahngeSelect}
           style={{
             width: '100%',
