@@ -4,537 +4,164 @@ import { UploadOutlined } from '@ant-design/icons';
 
 import axios from 'axios';
 
-
-
-let target_edit;
-let target_save;
-
 const AdminAllMenu = (props) => {
+  const [propsData, setPropsData] = useState();
+  const [showMenuData, setShowMenuData] = useState();
+  const [tablePage, setTablePage] = useState();
+  const [currentPageNumber, setCurrentPageNumber] = useState();
 
-  const [form] = Form.useForm();
-
-  const [filteredInfo, setFilteredInfo] = useState({});
-  const [sortedInfo, setSortedInfo] = useState({});
-  const [editingKey, setEditingKey] = useState('');
-  const [data, setData] = useState([]);
-
-  
-  const isEditing = (record) => record.key === editingKey;
-
-  const edit = (record) => {
-    target_edit = record;
-    form.setFieldsValue({
-      name: '',
-      price: '',
-      img_url: '',
-      lists: '',
-      description: '',
-        ...record,
-    });
-    setEditingKey(record.key);
-  };
-
-  const handleChange = (pagination, filters, sorter) => {
-    setFilteredInfo(filters);
-    setSortedInfo(sorter);
-  };
-
-  let menu_list_filters = [];
-  if(props.menuList !== null){
-    props.menuList.forEach((list, index) => {
-      menu_list_filters.push({
-        text: list.name,
-        value: list.name,
-      })
-    })
-  }
-  
-  const columns = [
-    {
-      title: '메뉴명',
-      dataIndex: 'name',
-      key: 'name',
-      editable: true,
-      render: (text) => <a>{text}</a>,
-    },
-    {
-      title: '가격',
-      dataIndex: 'price',
-      key: 'price',
-      sorter: (a, b) => a.price - b.price,
-      sortOrder: sortedInfo.columnKey === 'price' ? sortedInfo.order : null,
-      ellipsis: true,
-      editable: true,
-    },
-    {
-      title: '이미지',
-      dataIndex: 'img_url',
-      key: 'img_url',
-      editable: true,
-      render: (img_url) => (
-        <Upload
-          showUploadList={{
-            showDownloadIcon: false,
-            showRemoveIcon: false,
-          }}
-          defaultFileList={[{
-              name: img_url,
-              status: 'done',
-              url: `http://localhost:5000/uploads/${img_url}`,
-          }]}
-        >
-        </Upload>
-      )
-    },
-    {
-      title: '설명',
-      dataIndex: 'description',
-      key: 'description',
-      editable: true,
-    },
-    {
-      title: '리스트',
-      key: 'list',
-      dataIndex: 'list',
-      filters: menu_list_filters,
-      filteredValue: filteredInfo.list || null,
-      editable: true,
-      // return 값이 true 이면 해당 record 데이터를 보여준다
-      onFilter: (value, record) => {
-        let hasMenuList = [];
-        record.lists.forEach((list) => {
-          hasMenuList.push(list.name);
-        })
-        return hasMenuList.includes(value)
-      },
-      // 리스트를 tag 형식으로 출력한다.
-      render: (_, { lists }) => (
-        <>
-          {lists.map((list) => {
-            return (
-              <Tag color={list.color} key={list.id}>
-                {list.name}
-              </Tag>
-            );
-          })}
-        </>
-      ),
-      ellipsis: true,
-    },
-    {
-      title: '기능',
-      dataIndex: '기능',
-      render: (_, record) => {
-        const editable = isEditing(record);
-        return editable ? (
-          <span>
-            <Typography.Link
-              onClick={() => save(record.key)}
-              style={{
-                marginRight: 8,
-              }}
-            >
-              Save
-            </Typography.Link>
-            <Popconfirm title="정말 취소 하시겠습니까?" onConfirm={cancel}>
-              <a>Cancel</a>
-            </Popconfirm>
-          </span>
-        ) : 
-        ( 
-          <>
-            <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
-              Edit
-            </Typography.Link>
-            <Popconfirm title="정말 '삭제' 하시겠습니까?" onConfirm={() => handleDelete(record)}>
-              <a>Delete</a>
-            </Popconfirm>
-          </>
-        )
-      }
-    },
-  ];
+  const server_url = 'http://192.168.35.227:5000'
+  let maxItemCount = 3;
 
   useEffect(()=> {
-    let data_list = [];
-    if(props.menusLists !== null){
-      props.menusLists.forEach((menu, index) =>  {
-        let list_name_array = []
-        if(menu.menu_list.length > 0){
-          menu.menu_list.forEach((list) => {
-            list_name_array.push({
-              name : list.list_name,
-              id : list.list_id,
-              color : list.list_color,
-            })
-          })
-        }      
-        data_list.push({
-          "key": index,
-          "id": menu.id,
-          "name": menu.name,
-          "price": menu.price,
-          "img_url": menu.img_url,
-          "description": menu.description,
-          
-          "lists": list_name_array
+    if(props.menusLists !== null && props.menuList !== null){
+      setPropsData({
+        'menuData' : props.menusLists,
+        'menuList' : props.menuList,
+      })
+      if(props.menusLists.length < maxItemCount){
+        setShowMenuData(props.menusLists)
+        setTablePage([1]);
+
+      }else{
+        let countData = [];
+        props.menusLists.forEach((menu, index)=>{
+          if(index < maxItemCount){
+            countData.push(menu)
+          }
         })
-        list_name_array = []
-      })
-      setData(data_list);
-      data_list = [];
-    }
-  },[props.menusLists])
-
-
-
-  const handleDelete = (target_data) => {
-    const input_List = { "menu_id" : target_data.id }
-    axios.post("/admin/delete_menu", input_List)
-    .then((res)=> {
-      if(res.data.status === 200){
-        message.success(res.data.message);
-        const newData = data.filter((item) => item.key !== target_data.key);
-        setData(newData)    
-      }
-      if(res.data.status === 404){
-        message.error(res.data.message)
-      }
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-  }
-
-  const options = [];
-  if(props.menuList !== null){
-    props.menuList.forEach((item) => {
-      options.push({
-        // value: `${item.name}:${item.color}:${item.id}`,
-        // value: item.color,
-        value: item.id,
-        label: item.name,
-        color: item.color,
-      })
-    })
-  }
-  const [newList, setNewList] = useState();
-  // const [listCount, setListCount] = useState(0);
-  let listCount = 0;
-  let is_count = true;
-  const onCahngeSelect = (value) => {
-    setNewList(value);
-    listCount = 0;
-  }
-
-  const tagRender = (props) => {
-    const { label, value, closable, onClose, } = props;
-    const onPreventMouseDown = (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-    };
-    let color, name;
-    if(label !== undefined) {
-      // 라벨이 있으면
-      color = options.find(option => option.value === value).color;
-      name = label;
-    }else{
-      // 라벨이 없으면
-      if(newList.length > 0){
-        // 새로운 리스트 데이터가 있으면
-        console.log('newList,',newList)
-        if(newList.length > listCount){
-          console.log('newList,', newList, listCount);
-          color = options.find(option => option.value === newList[listCount].id).color;
-          name = options.find(option => option.value === newList[listCount].id).label;
-          console.log('정상,', color, name)
-          listCount = listCount + 1;
-
-        }else{
-          console.log('>>>>>>>>>>>',listCount)
-          is_count = false;
+        setShowMenuData(countData);
+        let addPageNumber = [];
+        for(let i=0; i<props.menusLists.length / maxItemCount; i++){
+          addPageNumber.push(i + 1);
         }
-      }else{
-        // 새로운 리스트 데이터가 없으면
-        console.log('여기는 안들엉옴')
+        setTablePage(addPageNumber);
       }
-    }
-    console.log('name,',name, 'color,',color)
-    console.log('###########################################')
-    return (
-      <Tag
-        color={color}
-        onMouseDown={onPreventMouseDown}
-        closable={closable}
-        onClose={onClose}
-        style={{
-          marginRight: 3,
-        }}
-      >
-        {name}
-      </Tag>
-    );
-  };
+      setCurrentPageNumber(1);
+    };
+  },[props])
 
-  const EditableCell = ({
-    editing,
-    dataIndex,
-    title,
-    inputType,
-    record,
-    index,
-    children,
-    ...restProps
-  }) => {
-    let inputNode;
-    let common_style = {margin: 0,}
-    const [hasImg, setHasImg] = useState(false);
-    if(inputType === 'number'){
-      inputNode = <Form.Item
-        name={dataIndex}
-        style={common_style}
-      >
-        <InputNumber />
-      </Form.Item>
-    }
-    else if(inputType === 'upload'){
-      inputNode = <Form.Item
-        name={dataIndex}
-        style={common_style}
-        valuePropName
-      >
-        <Upload
-          listType="picture"
-          showUploadList={{
-            showDownloadIcon: false,
-          }}
-          onChange={(file)=>{
-            if(file.status !== 'uploading') {
-              const fileListLength = file['fileList'].length;
-              fileListLength < 1 ? setHasImg(true) : setHasImg(false)
-            }
-          }}
-          defaultFileList={[{
-            uid: record.id,
-            name: record.img_url,
-            status: 'done',
-            url: `http://localhost:5000/uploads/${record.img_url}`,
-          }]}
-          maxCount={1}
-          beforeUpload={false}
-        >
-          {hasImg &&<Button icon={<UploadOutlined />}>이미지 추가</Button>}
-        </Upload>
-      </Form.Item>
-    }
-    else if(inputType === 'select'){
-      let default_value = [...new Set(record.lists.map(item => item.id))]
-      inputNode = <Form.Item
-        name={dataIndex}
-        style={common_style}
-        // initialvalues={default_value}
-      >
-        <Select           
-          mode="multiple"
-          showArrow
-          tagRender={tagRender}
-          showSearch
-          optionFilterProp="label"
-          defaultValue={default_value}
-          onChange={onCahngeSelect}
-          style={{
-            width: '100%',
-          }}
-          options={options}
-        />
-      </Form.Item>
-      
-    }else{
-      inputNode = <Form.Item
-        name={dataIndex}
-        style={common_style}
-      >
-        <Input />
-      </Form.Item>
-    }
-    return (
-      <td {...restProps}>
-        {editing ? (
-          // <Form.Item
-          //   name={dataIndex}
-          //   style={{
-          //     margin: 0,
-          //   }}
-          // >
-            inputNode
-          // </Form.Item>
-        ) : (
-          children
-        )}
-      </td>
-    );
-  };
-  
-  const save = async (key) => {
-    try{
-      let edit_data = await form.validateFields();
-      edit_data.lists = edit_data.list
-      delete edit_data.list
-      if(edit_data['lists'] === undefined) {
-        edit_data['lists'] = data[key]['lists']
-      }
-      
-      // if(edit_data['lists'].length > 0){
-      //   edit_data['lists'].forEach((list, index) => {
-      //     props.menuList.forEach((item) => {
-      //       if(item.id === list['id']){
-      //         edit_data['lists'][index] = list['id']
-      //         console.log('item,',item)
-      //       }
-      //     })
-      //   })
-      // }
-
-      target_save = edit_data;
-      // compare_edit_to_save(target_edit ,target_save)
-
-      if(edit_data['lists'].length > 0){
-        edit_data['lists'].forEach((list_id, index) => {
-          props.menuList.forEach((item) => {
-            if(item['id'] === list_id){
-              edit_data['lists'][index] = {
-                "id" : item['id'],
-                "name" : item['name'],
-                "color" : item['color'],
-              }
-            }
-          })
-        })
-      }
-
-      let newData = data;
-      const index = newData.findIndex((item) => key === item.key);
-
-      // props.menuList.id
-
-      if( index > -1){
-        const item = newData[index];
-        newData.splice(index, 1, {...item, ...edit_data});
-        setData(newData);
-        setEditingKey('');
-        
-        console.log('if 성공')
-      }else{
-        // newData.push(edit_data);
-        // setData(newData);
-        setEditingKey('');
-        console.log('else 성공')
-      }
-    }catch(errInfo){
-      console.log('catch')
-      console.log('Validate Failed:', errInfo);
-    }
-  };
-  
-  
-  const compare_edit_to_save = (edit, save) => {
-    
-    let formData = new FormData();
-    if(edit['name'] !== save['name']){
-      console.log('이름이 달라요')
-    }
-    if(edit['price'] !== save['price']){
-      console.log('가격이 달라요')
-    }
-    if(edit['img_url'] !== save['img_url']){
-      console.log('이미지가 달라요')
-      if(save['img_url']['fileList'].length > 0){
-        console.log('업로드된 이미지가 있어요')
-        formData.append('file', save['img_url']['fileList'][0].originFileObj)
-      }
-    }
-    if(edit['description'] !== save['description']){
-      console.log('설명이 달라요')
-    }
-    if(edit['lists'] !== save['lists']){
-      console.log('리스트가 달라요')
-    }
-    let MenuData = {
-      id: edit['id'],
-      name: save['name'], 
-      price: save['price'],
-      description: save['description'],
-      menu_list: save['lists'],
-    }
-    for(let key in MenuData) {
-    	formData.append(key, MenuData[key]);
-    }
-    axios.post("/admin/edit_menu", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      }
-    })
-    .then((res)=> {
-      if(res.data.status === 200){
-        message.success(res.data.message);
-        setData(res.data.data)
-      }
-      if(res.data.status === 404){
-        message.error(res.data.message)
-      }
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-
-    target_save = null;
-    target_edit = null;
+  if(propsData !== undefined) {
+    console.log("propsData['menuData'],",propsData['menuData'])
+    console.log("propsData['menuList'],",propsData['menuList'])
   }
 
-  const cancel = () => {
-    setEditingKey('');
-  };
-  
-  const mergedColumns = columns.map((col) => {
-    if (!col.editable) {
-      return col;
-    }
-    let input_type;
-    if(col.dataIndex === 'price'){
-      input_type = 'number'
-    }else if(col.dataIndex === 'img_url'){
-      input_type = 'upload'
-    }else if(col.dataIndex === 'list'){
-      input_type = 'select'
+  const changeTableNumber = (newPageNumber) => {
+    if(0 >= newPageNumber || newPageNumber > tablePage.length){
+
     }else{
-      input_type = 'text'
-    };
-    return {
-      
-      ...col,
-      onCell: (record) => ({
-        record,
-        // inputType: col.dataIndex === 'price' ? 'number' : 'text',
-        inputType: input_type,
-        dataIndex: col.dataIndex,
-        title: col.title,
-        editing: isEditing(record),
-      }),
-    };
-  });
+      let countData = [];
+      propsData.menuData.forEach((menu, index)=>{
+        if(index >= newPageNumber * maxItemCount - maxItemCount && index < newPageNumber * maxItemCount){
+          countData.push(menu)
+        }
+      })
+      setShowMenuData(countData);
+      setCurrentPageNumber(newPageNumber)
+
+    }
+  }
+
+  const editMenu = (index, menu) => {
+    console.log(menu, index)
+    // inputElement
+    const inputName = `<input type="text" name="name" value="${menu.name}" />`
+    const inputPrice = `<input type="Number" name="price" value="${menu.price}" />`
+    const inputDescription = `<input type="text" name="description" value="${menu.description}" />`
+    // const inputImg = `<input type="image" name="img_url" src="${server_url}/uploads/${menu.img_url}" />`
+    const inputImg = `<img src="${server_url + '/uploads/' + menu.img_url}" alt=${menu.img_url} style="width: 70px" /><input type="file" name="img_url" />`
+    const inputfunctionButton = `<button>저장</button><button>취소</button>`
+    // targetElement
+    const item_name = document.getElementById('tbody_tr_td_name:' + index)
+    const item_price = document.getElementById('tbody_tr_td_price:' + index)
+    const item_image = document.getElementById('tbody_tr_td_image:' + index)
+    const item_description = document.getElementById('tbody_tr_td_description:' + index)
+    const item_menuList = document.getElementById('tbody_tr_td_menuList:' + index)
+    const imem_function = document.getElementById('tbody_tr_td_function:' + index)
+
+    // innerHTML
+    item_name.innerHTML = inputName;
+    item_price.innerHTML = inputPrice;
+    item_image.innerHTML = inputImg;
+    item_description.innerHTML = inputDescription;
+    imem_function.innerHTML = inputfunctionButton;
+  }
+  const deleteMenu = (index, menu) => {
+    console.log(menu, index)
+  }
 
   return (
     <>
       <h2>모든 메뉴</h2>
-      <Form form={form} component={false}>
-        <Table 
-          components={{ body: { cell: EditableCell, }}} 
-          columns={mergedColumns} 
-          dataSource={data} 
-          onChange={handleChange} 
-          rowClassName="editable-row"
-          />
-      </Form>
+      <table style={{width: '100%'}}>
+        <thead>
+          <tr style={{textAlign: 'center'}}>
+            <th>메뉴명</th>
+            <th>가격</th>
+            <th>이미지</th>
+            <th>설명</th>
+            <th>리스트</th>
+            <th>기능</th>
+          </tr>
+        </thead>
+        <tbody>
+          {showMenuData !== undefined && showMenuData.map((menu, index) => (
+          <tr key={index} id={'tbody_tr:'+index} >
+            <td id={'tbody_tr_td_name:' + index}>{menu.name}</td>
+            <td id={'tbody_tr_td_price:' + index} style={{float: 'right'}}>{menu.price.toLocaleString()} 원</td>
+            <td id={'tbody_tr_td_image:' + index}>
+              <img src={server_url + '/uploads/' + menu.img_url} alt={menu.img_url} style={{width: '70px'}} />  
+            </td>
+            <td id={'tbody_tr_td_description:' + index}>{menu.description}</td>
+            <td id={'tbody_tr_td_menuList:' + index}>
+              {/* <div style={{display: 'flex', justifyContent: 'start', gap: '10px'}}>
+                {menu.menu_list.length !== 0 && (
+                  menu.menu_list.map((list, index) => (
+                    <div key={index} id={'list_id_'+list.list_id} style={{background : list.list_color, padding : '5px',borderRadius: '10px'}} >{list.list_name}</div>
+                  ))
+                )}
+              </div> */}
+              <div>
+                <div style={{display: 'flex',}}>
+                  {menu.menu_list.length !== 0 && (
+                    menu.menu_list.map((list, index) => (
+                      <div key={index} id={'list_id_'+list.list_id} style={{background : list.list_color, padding : '5px',borderRadius: '10px'}} >{list.list_name}</div>
+                    ))
+                  )}
+                  <div>▼</div>
+                </div>
+                <div>
+                  <ul>
+                    {propsData !== undefined && (
+                      propsData['menuList'].map((list,index) => (
+                        <li key={list.id} style={{background: list.color}} >{list.name}</li>
+                      ))
+                    )}
+                  </ul>
+                </div>
+              </div>
+            </td>
+            <td id={'tbody_tr_td_function:' + index}>
+              <button onClick={() => editMenu(index, menu)}>수정</button>
+              <button onClick={() => deleteMenu(index, menu)}>삭제</button>
+            </td>
+          </tr>
+
+          ))}
+        </tbody>
+      </table>
+      
+      <div style={{justifyContent: 'center', display: 'flex'}}>
+        <div>
+          <button onClick={() => changeTableNumber(currentPageNumber - 1)}>left</button>
+        </div>
+        {tablePage !== undefined && tablePage.map((number, index) => (
+          <button onClick={() => changeTableNumber(number)} key={index}>{number}</button>
+        ))}
+        <div>
+          <button onClick={ () => changeTableNumber(currentPageNumber + 1)}>rigth</button>
+        </div>
+      </div>
     </>
   )
 }
