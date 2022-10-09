@@ -62,6 +62,7 @@ const AdminAllMenu = (props) => {
     }
   }
 
+  // 메뉴 수정 기능
   const editMenu = (index, menu) => {
     console.log(menu, index)
     // inputElement
@@ -86,8 +87,18 @@ const AdminAllMenu = (props) => {
     item_description.innerHTML = inputDescription;
     imem_function.innerHTML = inputfunctionButton;
   }
+
+  // 메뉴 삭제 기능
   const deleteMenu = (index, menu) => {
     console.log(menu, index)
+  }
+  // input select 더보기 버튼
+
+  // input에 포커스가 되면 list를 보여주고 > list 를 클릭하면 추가 후 다시 포커스 해주고,
+  // list를 취소하면 삭제하고 다시 포커스 > 포커스 아웃하면 리스트 none 한다.
+  const showList = (index) => {
+    document.getElementById('selectListOptions:' + index).style.display = "block";
+    
   }
 
   return (
@@ -121,24 +132,34 @@ const AdminAllMenu = (props) => {
                   ))
                 )}
               </div> */}
-              <div>
-                <div style={{display: 'flex',}}>
-                  {menu.menu_list.length !== 0 && (
-                    menu.menu_list.map((list, index) => (
-                      <div key={index} id={'list_id_'+list.list_id} style={{background : list.list_color, padding : '5px',borderRadius: '10px'}} >{list.list_name}</div>
-                    ))
-                  )}
-                  <div>▼</div>
+              <div style={{ position: 'relative', }}>
+                <div onClick={()=>{showList(index)}} style={{border: '1px solid #d9d9d9',background: 'white' , padding: '5px',display: 'flex',justifyContent: 'space-between',borderRadius: '5px', alignItems: 'center'}}>
+                  <div style={{display: 'flex', gap: '5px', width: '92%', }} >
+                    {menu.menu_list.length !== 0 && (
+                      menu.menu_list.map((list, index) => (
+                        <div key={index} id={'list_id_'+list.list_id} style={{background : list.list_color, padding : '2px',borderRadius: '2px', display:'flex', alignItems: 'center', fontSize: '12px', height: '24px', gap: '4px'}} >
+                          <div>{list.list_name}</div>
+                          <button style={{border: 'none', background: 'none', color: 'rgb(85, 77, 55)', padding: '0'}}>X</button>
+                        </div>
+                      ))
+                    )}
+                    <input type="text" name="searchList" style={{ flexGrow: '1', outline: 'none', border: 'none',}} />
+                  </div>
+                  <div id={'menuListSelet:' + index}>더보기</div>
                 </div>
-                <div>
-                  <ul>
+
+                <div id={'selectListOptions:' + index} style={{background: 'white', boxShadow: '5px 5px 15px 0px rgb(0 0 0 / 20%)', display: 'none', position: 'absolute', width: '100%', zIndex: '1'}}>
+                  <ul style={{listStyle:'none', padding: '0' }} >
                     {propsData !== undefined && (
                       propsData['menuList'].map((list,index) => (
-                        <li key={list.id} style={{background: list.color}} >{list.name}</li>
+                        <li key={list.id} >
+                          <div>{list.name}</div>
+                        </li>
                       ))
                     )}
                   </ul>
                 </div>
+
               </div>
             </td>
             <td id={'tbody_tr_td_function:' + index}>
