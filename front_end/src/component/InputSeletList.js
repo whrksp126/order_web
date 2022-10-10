@@ -1,12 +1,9 @@
 import React from 'react'
 
-const InputSeletList = (menuKey, menu, propsData) => {
-  console.log('menuKey,',menuKey ,'menu,',menu, 'propsData,',propsData)
-  console.log(menuKey)
-  console.log(menu)
-  console.log(propsData)
+const InputSeletList = ({menuKey, menu, propsData}) => {
   // input에 포커스가 되면 list를 보여주고 > list 를 클릭하면 추가 후 다시 포커스 해주고,
   // list를 취소하면 삭제하고 다시 포커스 > 포커스 아웃하면 리스트 none 한다.
+  
   const showList = (index) => {
     document.getElementById('selectListOptions:' + index).style.display = "block";
   }
@@ -28,7 +25,7 @@ const InputSeletList = (menuKey, menu, propsData) => {
 
 
   return (
-    <div style={{ position: 'relative', }}>
+    <div id={'inputListComponent:' + menuKey} style={{ position: 'relative',}}> 
       <div onClick={()=>{showList(menuKey)}} style={{border: '1px solid #d9d9d9',background: 'white' , padding: '5px',display: 'flex',justifyContent: 'space-between',borderRadius: '5px', alignItems: 'center'}}>
         <div id={'showSeletList:' + menuKey} style={{display: 'flex', gap: '5px', width: '92%', }} >
           {menu.menu_list.length !== 0 && (
