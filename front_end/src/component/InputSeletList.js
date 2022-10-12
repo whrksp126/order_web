@@ -21,6 +21,8 @@ const InputSeletList = ({menuKey, menu, propsData}) => {
     `
     document.getElementById(`inputList:${menuKey}`).insertAdjacentHTML('beforebegin', newList);
     document.getElementById(`list_delete_button:${menuKey}_${list.id}`).onclick = (()=>deleteList(`${menuKey}_${list.id}`))
+    console.log(document.getElementById(`selectListMenuId:${menuKey}_${list.id}`))
+    document.getElementById(`selectListMenuId:${menuKey}_${list.id}`).style.background = '#e6f7ff;'
   }
 
 
@@ -49,7 +51,7 @@ const InputSeletList = ({menuKey, menu, propsData}) => {
         <ul style={{listStyle:'none', padding: '0' }} >
           {propsData !== undefined && (
             propsData['menuList'].map((list, index) => (
-              <li onClick={()=>{addList(menuKey, list)}} key={list.id} >
+              <li id={`selectListMenuId:${menuKey}_${list.id}`} onClick={()=>{addList(menuKey, list)}} key={list.id} >
                 <div>{list.name}</div>
               </li>
             ))

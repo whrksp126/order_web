@@ -87,6 +87,7 @@ const AdminAllMenu = (props) => {
               const menuData = menu;
               return (
                 <TrMenuComponent 
+                  key={index}
                   menuKey={menuKey} 
                   menuData={menuData} 
                   propsData={propsData} 
