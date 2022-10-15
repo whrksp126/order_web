@@ -1,72 +1,108 @@
+import axios from 'axios';
 import React from 'react'
 import { useState } from 'react'
 import InputSeletList from './InputSeletList'
 
-const TrMenuComponent = ({menuKey, menuData, propsData, server_url}) => {
+const TrMenuComponent = ({menuKey, menuData, propsData, server_url, setPropsData}) => {
   const [nowEdit, setNowEdit] = useState(false);
+
+  const default_submit_Data = [];
+  menuData.menu_list.forEach( list => default_submit_Data.push(list.list_id))
+
+  const [name, setName] = useState(menuData.name);
+  const [price, setPrice] = useState(menuData.price);
+  const [img, setImg] = useState({file: "", imagePreviewUrl: server_url + '/uploads/' + menuData.img_url});
+  const [description, setDescription] = useState(menuData.description);
+  const [menuList, setMenuList] = useState(default_submit_Data);
   
+  const changeMenuName = (e) => {
+    setName(e.target.value);
+  }
+  const changeMenuPrice = (e) => {
+    setPrice(e.target.value);
+  }
+  const changeMenuDescription = (e) => {
+    setDescription(e.target.value);
+  }
+  const changeMenuImage = (e) => {
+    e.preventDefault();
+
+    let reader = new FileReader();
+    let file = e.target.files[0];
+    reader.onloadend = () => {
+      setImg({ file: file, imagePreviewUrl: reader.result });
+    };
+    reader.readAsDataURL(file);
+  };
+
+
   // 메뉴 수정 기능
   const editMenu = (index, menu) => {
-    
-    console.log(menu, index)
-    // // inputElement
-    // const inputName = `<input type="text" name="name" value="${menu.name}" />`
-    // const inputPrice = `<input type="Number" name="price" value="${menu.price}" />`
-    // const inputDescription = `<input type="text" name="description" value="${menu.description}" />`
-    // // const inputImg = `<input type="image" name="img_url" src="${server_url}/uploads/${menu.img_url}" />`
-    // const inputImg = `<img src="${server_url + '/uploads/' + menu.img_url}" alt=${menu.img_url} style="width: 70px" /><input type="file" name="img_url" />`
-    // const inputfunctionButton = `<button>저장</button><button>취소</button>`
-    // // targetElement
-    // const item_name = document.getElementById('tbody_tr_td_name:' + index)
-    // const item_price = document.getElementById('tbody_tr_td_price:' + index)
-    // const item_image = document.getElementById('tbody_tr_td_image:' + index)
-    // const item_description = document.getElementById('tbody_tr_td_description:' + index)
-    // // const item_menuList = document.getElementById('tbody_tr_td_menuList:' + index)
-    
-    // const imem_function = document.getElementById('tbody_tr_td_function:' + index)
-
-    // // innerHTML
-    // item_name.innerHTML = inputName;
-    // item_price.innerHTML = inputPrice;
-    // item_image.innerHTML = inputImg;
-    // item_description.innerHTML = inputDescription;
-
-    // document.getElementById('inputListComponent:' + index).style.display = 'block'
-    // document.getElementById('show_menuList:' + index).style.display = 'none'
-
-    // imem_function.innerHTML = inputfunctionButton;
-
     setNowEdit(true);
   }
 
   // 메뉴 삭제 기능
-  const deleteMenu = (index, menu) => {
-    console.log(menu, index)
+  const deleteMenu = (menu) => {
+    const newMenuData = propsData.menuData.filter(propMenu => propMenu.id !== menu.id);
+    setPropsData({
+      menuList: propsData.menuList,
+      menuData: newMenuData
+    })
   }
 
+  // 메뉴 정보 변경 취소
   const cancelEdit = () => {
     setNowEdit(false);
-
+    setName(menuData.name);
+    setPrice(menuData.price);
+    setImg({file: "", imagePreviewUrl: server_url + '/uploads/' + menuData.img_url});
+    setDescription(menuData.description);
+    setMenuList(default_submit_Data);
   }
 
+  // 메뉴 정보 변경 저장
   const saveMenu = () => {
-
+    const formData = {
+      id: menuData.id, 
+      name, 
+      price, 
+      img:img.file, 
+      description, 
+      'menu_list':menuList
+    }
+    console.log(formData);
+    axios.post("/admin/edit_menu", formData, 
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      }
+    }
+    ).then((res)=>{
+      if(res.data.status === 200){
+        // messags.success(res.data.message);
+        console.log(res.data.message);
+      }
+      if(res.data.status === 404){
+        // message.error(res.data.message)
+        console.log(res.data.message)
+      }
+    }).catch((err) => {
+      console.log(err)
+    })
   }
-
-  
 
   return (
     <tr key={menuKey} id={'tbody_tr:'+menuKey} >
       <td id={'tbody_tr_td_name:' + menuKey}>
         {nowEdit ? (
-          <input type="text" name="name" value={menuData.name} />
+          <input type="text" name="name" defaultValue={menuData.name} onChange={(e)=>changeMenuName(e)} />
         ) : (
           <>{menuData.name}</>
         )}
       </td>
       <td id={'tbody_tr_td_price:' + menuKey} style={{float: 'right'}}>
         {nowEdit ? (
-          <input type="Number" name="price" value={menuData.price} />
+          <input type="Number" name="price" defaultValue={menuData.price} onChange={e => changeMenuPrice(e)} />
         ) : (
           <>{menuData.price.toLocaleString()} 원</>
         )}
@@ -74,8 +110,8 @@ const TrMenuComponent = ({menuKey, menuData, propsData, server_url}) => {
       <td id={'tbody_tr_td_image:' + menuKey}>
         {nowEdit ? (
           <>
-            <img src={server_url + '/uploads/' + menuData.img_url} alt={menuData.img_url} style={{width: '70px'}} />
-            <input type="file" name="img_url" />
+            <img src={img.imagePreviewUrl} alt={menuData.img_url} style={{width: '70px'}} />
+            <input type="file" name="img_url" onChange={e => changeMenuImage(e)} />
           </>
         ) : (
           <img src={server_url + '/uploads/' + menuData.img_url} alt={menuData.img_url} style={{width: '70px'}} />
@@ -83,20 +119,19 @@ const TrMenuComponent = ({menuKey, menuData, propsData, server_url}) => {
       </td>
       <td id={'tbody_tr_td_description:' + menuKey}>
         {nowEdit ? (
-          <input type="text" name="description" value={menuData.description} />
+          <input type="text" name="description" defaultValue={menuData.description} onChange={e => changeMenuDescription(e)} />
         ) : (
           <>{menuData.description}</>
         )}
       </td>
       <td id={'tbody_tr_td_menuList:' + menuKey}>
-        {nowEdit ? (        
-          // <div></div>
-          <InputSeletList menuKey={menuKey} menu={menuData} propsData={propsData} />
+        {nowEdit ? (
+          <InputSeletList menuKey={menuKey} menu={menuData} propsData={propsData} setMenuList={setMenuList} />
         ) : (
           <div id={'show_menuList:' + menuKey} style={{display: 'flex', justifyContent: 'start', gap: '10px'}}>
             {menuData.menu_list.length !== 0 && (
               menuData.menu_list.map((list, index) => (
-                <div key={index} id={'list_id_'+list.list_id} style={{background : list.list_color, padding : '5px',borderRadius: '10px'}} >{list.list_name}</div>
+                <div key={`${list.list_id}_${index}`} id={'list_id_'+list.list_id} style={{background : list.list_color, padding : '5px',borderRadius: '10px'}} >{list.list_name}</div>
               ))
             )}
           </div>
@@ -111,7 +146,7 @@ const TrMenuComponent = ({menuKey, menuData, propsData, server_url}) => {
         ) : (
           <>
             <button onClick={() => editMenu(menuKey, menuData)}>수정</button>
-            <button onClick={() => deleteMenu(menuKey, menuData)}>삭제</button>
+            <button onClick={() => deleteMenu(menuData)}>삭제</button>
           </>
         )}
 

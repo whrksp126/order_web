@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Image, Input, InputNumber, message, Popconfirm, Select, Space, Table, Tag, Typography, Upload } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
-
 import axios from 'axios';
-import InputSeletList from './InputSeletList';
+
 import TrMenuComponent from './TrMenuComponent';
 
 const AdminAllMenu = (props) => {
-
 
   const [propsData, setPropsData] = useState();
   const [showMenuData, setShowMenuData] = useState();
@@ -45,14 +41,8 @@ const AdminAllMenu = (props) => {
     };
   },[props])
 
-  if(propsData !== undefined) {
-    console.log("propsData['menuData'],",propsData['menuData'])
-    console.log("propsData['menuList'],",propsData['menuList'])
-  }
-
   const changeTableNumber = (newPageNumber) => {
     if(0 >= newPageNumber || newPageNumber > tablePage.length){
-
     }else{
       let countData = [];
       propsData.menuData.forEach((menu, index)=>{
@@ -62,9 +52,30 @@ const AdminAllMenu = (props) => {
       })
       setShowMenuData(countData);
       setCurrentPageNumber(newPageNumber)
-
     }
   }
+  // 메뉴 갯수가 변경 될 경우 페이지 숫자도 자동 변경
+  useEffect(()=> {
+    if(props.menusLists !== null && props.menuList !== null){
+      if(propsData.menuData.length < maxItemCount){
+        setTablePage([1]);
+      }else{
+        let countData = [];
+          propsData.menuData.forEach((menu, index)=>{
+            if(index < maxItemCount){
+              countData.push(menu)
+            }
+          })
+          let addPageNumber = [];
+          for(let i=0; i<props.menusLists.length / maxItemCount; i++){
+            addPageNumber.push(i + 1);
+          }
+          setTablePage(addPageNumber);
+      }
+      // 현재 페이지 유지하기
+      changeTableNumber(currentPageNumber);
+    }
+  },[propsData])
 
   return (
     <>
@@ -92,6 +103,7 @@ const AdminAllMenu = (props) => {
                   menuData={menuData} 
                   propsData={propsData} 
                   server_url={server_url} 
+                  setPropsData={setPropsData}
                 />
               )
             })
