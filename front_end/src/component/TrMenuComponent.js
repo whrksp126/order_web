@@ -90,8 +90,8 @@ const TrMenuComponent = ({menuKey, menuData, propsData, server_url}) => {
       </td>
       <td id={'tbody_tr_td_menuList:' + menuKey}>
         {nowEdit ? (        
-          <div></div>
-          // <InputSeletList menuKey={menuKey} menu={menuData} propsData={propsData} />
+          // <div></div>
+          <InputSeletList menuKey={menuKey} menu={menuData} propsData={propsData} />
         ) : (
           <div id={'show_menuList:' + menuKey} style={{display: 'flex', justifyContent: 'start', gap: '10px'}}>
             {menuData.menu_list.length !== 0 && (
