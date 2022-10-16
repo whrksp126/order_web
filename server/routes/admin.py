@@ -177,9 +177,10 @@ def delete_menu():
 @bp.route('/edit_menu', methods=['POST'])
 @login_required
 def edit_menu():
-  print('@@@@@@@@@@@@@@',request.form)
+  print('@@@@@@@@@@@@@@',request.form)    
   print('@@@@@@@@@@@@@@',request.files)
   user_id = current_user.id
+  
   menu_id = request.form['id']
   name = request.form['name']
   print('@@@@name',name)
@@ -191,7 +192,6 @@ def edit_menu():
   print('@@@@description,',description)
   
   
-  
   # menu_list = request.form.get('menu_list', None).split(',')
   # menu_list = request.form.get('menu_list', None)
   # menu_list = request.form.get('menu_list')
@@ -200,14 +200,10 @@ def edit_menu():
   # menu_list = request.form.get('menu_list')
   # print('menu_list,',menu_list)
   # print(request.get_data(parse_form_data=True))
-  print('menu_list,',request.form.getlist('menu_list'))
-  menu_list = request.form.get('menu_list')
+  # print('menu_list,',request.form.getlist('menu_list'))
+  # menu_list = request.form.get('menu_list')
   # if menu_list[0] == '':
   #   menu_list = None;
-  
-  
-  
-  
   
   image = request.files.get('img', None)
   print('image,',image)

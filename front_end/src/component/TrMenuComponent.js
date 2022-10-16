@@ -66,9 +66,9 @@ const TrMenuComponent = ({menuKey, menuData, propsData, server_url, setPropsData
       id: menuData.id, 
       name, 
       price, 
-      img:img.file, 
       description, 
-      'menu_list':menuList
+      menu_list:menuList,
+      img:img.file, 
     }
     console.log(formData);
     axios.post("/admin/edit_menu", formData, 
