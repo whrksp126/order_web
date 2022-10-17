@@ -41,15 +41,23 @@ const AdminAllMenu = (props) => {
     };
   },[props])
 
-  const changeTableNumber = (newPageNumber) => {
+  const changeTableNumber = (newPageNumber, searchData=undefined) => {
     if(0 >= newPageNumber || newPageNumber > tablePage.length){
     }else{
       let countData = [];
-      propsData.menuData.forEach((menu, index)=>{
-        if(index >= newPageNumber * maxItemCount - maxItemCount && index < newPageNumber * maxItemCount){
-          countData.push(menu)
-        }
-      })
+      searchData === undefined ? (
+        propsData.menuData.forEach((menu, index)=>{
+          if(index >= newPageNumber * maxItemCount - maxItemCount && index < newPageNumber * maxItemCount){
+            countData.push(menu)
+          }
+        })
+      ) : (
+        searchData.forEach((menu, index)=>{
+          if(index >= newPageNumber * maxItemCount - maxItemCount && index < newPageNumber * maxItemCount){
+            countData.push(menu)
+          }
+        })
+      )
       setShowMenuData(countData);
       setCurrentPageNumber(newPageNumber)
     }
@@ -77,14 +85,31 @@ const AdminAllMenu = (props) => {
     }
   },[propsData])
 
+  const searchMenuName = (e) => {
+    const filtered_menus = propsData.menuData.filter(function(menu){
+      menu = menu.name.toLowerCase();
+
+      return menu.indexOf(e.target.value) > -1; 
+    })
+
+    setShowMenuData(filtered_menus)
+    changeTableNumber(1, filtered_menus)
+    // searchData
+  }
+
   return (
     <>
       <h2>모든 메뉴</h2>
       <table style={{width: '100%'}}>
         <thead>
           <tr style={{textAlign: 'center'}}>
-            <th>메뉴명</th>
-            <th>가격</th>
+            <th>
+              <span>메뉴명</span>
+              <input type="text" placeholder="메뉴 명" id="filter_menus" onChange={e => searchMenuName(e)}/>
+            </th>
+            <th>
+              가격
+            </th>
             <th>이미지</th>
             <th>설명</th>
             <th>리스트</th>

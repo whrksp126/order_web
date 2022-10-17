@@ -167,6 +167,7 @@ def delete_menu():
   json_data = request.get_json()
   menu_id = json_data['menu_id']
   fun_delete_menu(menu_id, user_id)
+  
   return jsonify(
       message='메뉴를 삭제 하였습니다.',
       category='success',
@@ -177,57 +178,35 @@ def delete_menu():
 @bp.route('/edit_menu', methods=['POST'])
 @login_required
 def edit_menu():
-  print('@@@@@@@@@@@@@@',request.form)    
-  print('@@@@@@@@@@@@@@',request.files)
   user_id = current_user.id
   
   menu_id = request.form['id']
   name = request.form['name']
-  print('@@@@name',name)
-  
   price = int(request.form['price'])
-  print('@@@@price',price)
+  description = request.form.get('description')
+  menu_list = json.loads(request.form.get('menu_list'))
+  image = request.files.get('img')
   
-  description = request.form.get('description', None)
-  print('@@@@description,',description)
-  
-  
-  # menu_list = request.form.get('menu_list', None).split(',')
-  # menu_list = request.form.get('menu_list', None)
-  # menu_list = request.form.get('menu_list')
-  # print('@@@@menu_list,',menu_list)
-  # answer = request.form.getlist('menu_list[]')
-  # menu_list = request.form.get('menu_list')
-  # print('menu_list,',menu_list)
-  # print(request.get_data(parse_form_data=True))
-  # print('menu_list,',request.form.getlist('menu_list'))
-  # menu_list = request.form.get('menu_list')
-  # if menu_list[0] == '':
-  #   menu_list = None;
-  
-  image = request.files.get('img', None)
-  print('image,',image)
+  if image != None:
+    menu = Menu.query.filter(Menu.id == menu_id).first()
+    menu.img_url
     
-  
-  # if image != None:
-  #   menu = Menu.query.filter(Menu.id == menu_id).first()
-  #   menu.img_url
+    path_menu_images = app.config['UPLOAD_FOLDER'] + 'menu_images/' + str(user_id)
     
-  #   path_menu_images = app.config['UPLOAD_FOLDER'] + 'menu_images/' + str(user_id)
+    fun_delete_server_image(user_id, menu.img_url)
     
-  #   fun_delete_server_image(user_id, menu.img_url)
+    # 유저에 따라 이미지를 저장함
+    if image and allowed_file(image.filename):
+      os.makedirs(path_menu_images, exist_ok=True)
+      image.save(os.path.join(path_menu_images, image.filename))
+      image = image.filename
     
-  #   # 유저에 따라 이미지를 저장함
-  #   if image and allowed_file(image.filename):
-  #     os.makedirs(path_menu_images, exist_ok=True)
-  #     image.save(os.path.join(path_menu_images, image.filename))
-  #     image = image.filename
-    
-  # fun_edit_menu(user_id, menu_id, name, price, description, menu_list, image)
-  # menus_lists = fun_call_all_menus(user_id)
+  fun_edit_menu(user_id, menu_id, name, price, description, menu_list, image)
+  menus_lists = fun_call_all_menus(user_id)
+  print('menus_lists,',menus_lists)
   return jsonify(
     message='메뉴를 수정 하였습니다.',
     category='success',
-    # data = menus_lists,
+    data = menus_lists,
     status=200
   )

@@ -44,9 +44,23 @@ const TrMenuComponent = ({menuKey, menuData, propsData, server_url, setPropsData
   // 메뉴 삭제 기능
   const deleteMenu = (menu) => {
     const newMenuData = propsData.menuData.filter(propMenu => propMenu.id !== menu.id);
-    setPropsData({
-      menuList: propsData.menuList,
-      menuData: newMenuData
+    
+    axios.post("/admin/delete_menu", {menu_id : menu.id})
+    .then((res)=>{
+      if(res.data.status === 200){
+        // messags.success(res.data.message);
+        console.log(res.data.message);
+        setPropsData({
+          menuList: propsData.menuList,
+          menuData: newMenuData
+        })
+      }
+      if(res.data.status === 404){
+        // message.error(res.data.message)
+        console.log(res.data.message)
+      }
+    }).catch((err) => {
+      console.log(err)
     })
   }
 
@@ -67,23 +81,21 @@ const TrMenuComponent = ({menuKey, menuData, propsData, server_url, setPropsData
       name, 
       price, 
       description, 
-      menu_list:menuList,
+      menu_list:JSON.stringify(menuList), 
       img:img.file, 
     }
-    console.log(formData);
-    axios.post("/admin/edit_menu", formData, 
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      }
-    }
-    ).then((res)=>{
+    axios.post("/admin/edit_menu", formData, {
+      headers: { "Content-Type": "multipart/form-data", }
+    }).then((res)=>{
       if(res.data.status === 200){
-        // messags.success(res.data.message);
         console.log(res.data.message);
+        setPropsData({
+          menuList: propsData.menuList,
+          menuData: res.data.data
+        })
+        setNowEdit(false);
       }
       if(res.data.status === 404){
-        // message.error(res.data.message)
         console.log(res.data.message)
       }
     }).catch((err) => {
