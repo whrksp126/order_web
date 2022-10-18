@@ -36,7 +36,7 @@ const Main = () => {
             <div className="main_table" >
               <div>
                 <div>
-                  <div>테이블</div>
+                  <div onClick={()=>{navigate("/client")}}>테이블</div>
                 </div>
                 <div style={{ background: "yellow", width: "15vw", height: "10vh", margin: "auto"}}>
                   <div>주방</div>

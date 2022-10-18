@@ -139,7 +139,7 @@ def add_list():
       status=200
     )
     
-    
+# /admin/call_all    
 # 페이지 로딩시 모든 리스트 호출 하기
 @bp.route('/call_all', methods=['POST'])
 @login_required

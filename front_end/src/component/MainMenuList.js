@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import MenuItem from './MenuItem'
 import './MainMenuList.css'
 import MenuBar from './MenuBar'
@@ -49,20 +49,30 @@ let menuLIstApi =
   }
 ]
 
-const MainMenuList = () => {
+
+const MainMenuList = ({menuList, menusLists}) => {
   const [currentList, setCurrentList] = useState(1);
+  menusLists !== undefined && menusLists.forEach((menuData)=> {
+    console.log(menuData);
+  })
 
   return (
     <div className="MenuList" style={{display: 'flex'}}>
       <MenuBar currentList={currentList} setCurrentList={setCurrentList} />
       <div>
-      {
+        {menusLists !== undefined && menusLists.map((menu, index) => (
+          menu.menu_list.includes(currentList) && 
+          <MenuItem key={index} name={menu.name} price={menu.price} url={menu.img_url} />
+        ))}
+
+      {/* {
         menuLIstApi.map((menu, index)=> (
 
           menu.listId.includes(currentList) && 
           <MenuItem key={index} name={menu.foodName} price={menu.foodPrice} url={menu.foodUrl} /> 
         ))
-      }
+      } */}
+      
       </div>
     </div>
   )
