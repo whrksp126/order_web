@@ -104,22 +104,6 @@
     5. set mapping_table
 
     6. mapping_table join 호출하기
-
-      > sql join <
-      SELECT menu.id, menu.name, price, menu_list.name, menu_list.id as list_id
-      FROM r_menu_list
-      LEFT JOIN menu ON menu.id = r_menu_list.menu_id
-      LEFT JOIN menu_list ON menu_list.id = r_menu_list.list_id 
-      
-      > orm join <
-      results = db.session\
-      .query(Menu, R_menu_list, Menu_list)\
-      .select_from(Menu)\
-      .join(R_menu_list)\
-      .join(Menu_list)\
-      .all()
-      for menu, r_menu_list, menu_list in results:
-        print(menu.id, menu.name, menu.price, menu_list.id, menu_list.name)
     
     7. 메뉴 데이터 수정 api 만들기
 
