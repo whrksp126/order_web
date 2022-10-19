@@ -108,7 +108,7 @@ const MainOrderList = () => {
               <tr key={index}>
                 <td>{index+1}</td>
                 <td>
-                  <img src={'images/'+ item.url} alt={"foodIcon"} style={{height:'5vh'}} />
+                  <img src={item.url} alt={"foodIcon"} style={{height:'5vh'}} />
                 </td>
                 <td>{item.name}</td>
                 <td>{item.price}</td>

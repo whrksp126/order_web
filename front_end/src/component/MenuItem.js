@@ -17,11 +17,10 @@ const MenuItem = ({name, price, url}) => {
     },
   }))
   
-
   return (
     <div className="menuItem">
       <div style={{ opacity: isDragging ? 0.5 : 1}}>
-        <img ref={drag} src={'images/' + url} alt={"foodeImage"} />
+        <img ref={drag} src={url} alt={"foodeImage"} />
       </div>
       <div className="menuInfo">
         <div>{name}</div>

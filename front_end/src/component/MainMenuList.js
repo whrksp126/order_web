@@ -52,18 +52,43 @@ let menuLIstApi =
 
 const MainMenuList = ({menuList, menusLists}) => {
   const [currentList, setCurrentList] = useState(1);
-  menusLists !== undefined && menusLists.forEach((menuData)=> {
-    console.log(menuData);
-  })
+
+  // menuLIstApi.map((menu, index) => (
+  //   console.log('menu,', menu)
+
+  // ))
+
+  // menusLists !== undefined && menusLists.map((menu, index) => {
+  //   menu.menu_list.forEach((list) => {
+  //     if(list.list_id === currentList){
+  //       console.log(menu)
+  //     }
+  //   })
+  // })
 
   return (
     <div className="MenuList" style={{display: 'flex'}}>
       <MenuBar currentList={currentList} setCurrentList={setCurrentList} />
       <div>
-        {menusLists !== undefined && menusLists.map((menu, index) => (
-          menu.menu_list.includes(currentList) && 
-          <MenuItem key={index} name={menu.name} price={menu.price} url={menu.img_url} />
-        ))}
+
+      {
+        menusLists !== undefined && menusLists.map((menu, index) => {
+          let targetMenu = undefined;
+          menu.menu_list.forEach((list) => {
+            if(list.list_id === currentList){
+              targetMenu = menu
+            } 
+          })
+          
+          return ( targetMenu !== undefined && 
+            <MenuItem 
+              key={index} 
+              name={targetMenu.name} 
+              price={targetMenu.price} 
+              url={`http://192.168.35.227:5000/uploads/${targetMenu.img_url}`} /> 
+          )
+        })
+      }
 
       {/* {
         menuLIstApi.map((menu, index)=> (
