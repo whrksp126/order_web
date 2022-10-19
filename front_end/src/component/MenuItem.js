@@ -24,7 +24,7 @@ const MenuItem = ({name, price, url}) => {
       </div>
       <div className="menuInfo">
         <div>{name}</div>
-        <div>{price}원</div>
+        <div>{price.toLocaleString()}원</div>
       </div>
     </div>
   )

@@ -111,7 +111,7 @@ const MainOrderList = () => {
                   <img src={item.url} alt={"foodIcon"} style={{height:'5vh'}} />
                 </td>
                 <td>{item.name}</td>
-                <td>{item.price}</td>
+                <td>{item.price.toLocaleString()}</td>
                 <td>
                   <button onClick={()=> plusItem(item)}>
                     <FontAwesomeIcon icon={faPlus} />
@@ -133,7 +133,7 @@ const MainOrderList = () => {
             </tbody>
           </table>
         </div>
-          {selectedItem.length > 0 && <div style={{float: 'right'}}>총 가격 : {totallPrice}</div>}
+          {selectedItem.length > 0 && <div style={{float: 'right'}}>총 가격 : {totallPrice.toLocaleString()}</div>}
         
       </div>
       <div><button>주문하기</button></div>
