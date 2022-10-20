@@ -6,6 +6,7 @@ import Login from './page/Login';
 import Main from './page/Main';
 import Admin from './page/Admin';
 import Client from './page/Client';
+import Counter from './page/Counter';
 
 const Master = () => {
   return (
@@ -14,6 +15,7 @@ const Master = () => {
         <Routes>
           <Route path='/login' element={<Login/>} />
           <Route path='/client' element={<Client/>} />
+          <Route path='/counter' element={<Counter/>} />
           <Route path='/admin' element={<Admin/>} />
           <Route path='/' element={<Main/>} />
         </Routes>

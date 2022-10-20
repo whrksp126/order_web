@@ -42,7 +42,7 @@ const Main = () => {
                   <div>주방</div>
                 </div>
                 <div style={{ background: "yellow", width: "15vw", height: "10vh", margin: "auto"}}>
-                  <div>계산대</div>
+                  <div onClick={()=>{navigate("/counter")}}>계산대</div>
                 </div>
               </div>
 
