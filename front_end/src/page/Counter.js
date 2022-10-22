@@ -1,67 +1,44 @@
 import React, { useEffect, useState } from 'react'
 import { io } from "socket.io-client";
-import WebSocketCall from '../component/WebSocketCall';
-
 
 const Counter = () => {
+  const [testArray, setTestArray] = useState([]);
+  const [text, setText] = useState();
 
-  const [socketInstance, setSocketInstance] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [buttonStatus, setButtonStatus] = useState(false);
+  const socket = io.connect('http://127.0.0.1:5000');
 
-  const handleClick = () => {
-    if (buttonStatus === false) {
-      setButtonStatus(true);
-    } else {
-      setButtonStatus(false);
-    }
-  };
+  useEffect(()=>{
+    socket.on('connect', () => {
+      socket.send('사용자가 연결되었습니다!')
+    })
+    socket.on('message', (msg) => {
+      setTestArray([...testArray, msg])
+      console.log('받은 메시지: ', msg)
+    })
+  })
 
-  useEffect(() => {
-    if (buttonStatus === true) {
-      const socket = io("localhost:5001/", {
-        transports: ["websocket"],
-        cors: {
-          origin: "http://localhost:3000/",
-        },
-      });
+  const testSubmit = () => {
+    socket.send(text)
 
-      setSocketInstance(socket);
+    setText('');
+  }
 
-      socket.on("connect", (data) => {
-        console.log(data);
-      });
+  const textOnChange = (e) => {
+    setText(e.target.value);
+  }
 
-      setLoading(false);
 
-      socket.on("disconnect", (data) => {
-        console.log(data);
-      });
+  return <>
 
-      return function cleanup() {
-        socket.disconnect();
-      };
-    }
-  }, [buttonStatus]);
-  return (
-    <>    
-      <div className="App">
-        <h1>React/Flask App + socket.io</h1>
-        <div className="line">
-        </div>
-        {!buttonStatus ? (
-          <button onClick={handleClick}>turn chat on</button>
-        ) : (
-          <>
-            <button onClick={handleClick}>turn chat off</button>
-            <div className="line">
-              {!loading && <WebSocketCall socket={socketInstance} />}
-            </div>
-          </>
-        )}
-      </div>
-    </>
-  )
+  <input type="text" value={text} id="myMessage" onChange={(e) => textOnChange(e)}/>
+  <button onClick={() => testSubmit()}>전송</button>
+  <h1>socket test</h1>
+  {testArray.length !== 0 && 
+    testArray.map((data, index) => (
+      <div key={index}>{data}</div>
+    ))
+  }
+  </>
 }
 
 export default Counter
