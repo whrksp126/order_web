@@ -48,7 +48,6 @@ const Counter = () => {
       <div className="App">
         <h1>React/Flask App + socket.io</h1>
         <div className="line">
-          <HttpCall />
         </div>
         {!buttonStatus ? (
           <button onClick={handleClick}>turn chat on</button>
