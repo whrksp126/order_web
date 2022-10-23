@@ -13,17 +13,6 @@ let socket = io.connect(`${endPoint}`)
 
 const MainOrderList = () => {
 
-
-
-
-
-
-
-
-
-
-
-
   const [selectedItem, setSelectedItem] = useState([]);
   const [newItem, setNewItem] = useState();
   const [{ canDrop, isOver }, drop] = useDrop(() => ({
