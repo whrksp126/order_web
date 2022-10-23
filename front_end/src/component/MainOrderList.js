@@ -4,7 +4,26 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartPlus, faPlus, faMinus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useDrop } from 'react-dnd';
 
+import { io } from "socket.io-client";
+
+let endPoint = "http://127.0.0.1:5000"
+let socket = io.connect(`${endPoint}`)
+
+
+
 const MainOrderList = () => {
+
+
+
+
+
+
+
+
+
+
+
+
   const [selectedItem, setSelectedItem] = useState([]);
   const [newItem, setNewItem] = useState();
   const [{ canDrop, isOver }, drop] = useDrop(() => ({
@@ -19,6 +38,7 @@ const MainOrderList = () => {
     }),
     drop: (item, monitor) => {
       setNewItem ({
+        id: item.id,
         name : item.name,
         price : item.price,
         url : item.url,
@@ -26,6 +46,12 @@ const MainOrderList = () => {
       })
     }
   }))
+  
+  
+  const socketTest = () => {
+    console.log('selectedItem,,',selectedItem)
+    socket.emit("message", selectedItem);
+  }
 
   useEffect(()=> {
     if(selectedItem.length === 0 && newItem !== undefined){
@@ -77,7 +103,6 @@ const MainOrderList = () => {
   const deleteItem = (item) => {
     return setSelectedItem(selectedItem.filter(i => i.name !== item.name));
   }
-
 
   return (
     <div className="MainOrderList">
@@ -136,7 +161,9 @@ const MainOrderList = () => {
           {selectedItem.length > 0 && <div style={{float: 'right'}}>총 가격 : {totallPrice.toLocaleString()}</div>}
         
       </div>
-      <div><button>주문하기</button></div>
+      <div>
+        <button onClick={(e) => socketTest(e) }>주문하기</button>
+      </div>
     </div>
   )
 }

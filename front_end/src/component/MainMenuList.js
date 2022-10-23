@@ -79,10 +79,10 @@ const MainMenuList = ({menuList, menusLists}) => {
               targetMenu = menu
             } 
           })
-          
           return ( targetMenu !== undefined && 
             <MenuItem 
               key={index} 
+              id={targetMenu.id}
               name={targetMenu.name} 
               price={targetMenu.price} 
               url={`http://192.168.35.227:5000/uploads/${targetMenu.img_url}`} /> 

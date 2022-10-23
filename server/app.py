@@ -6,8 +6,12 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 @socketio.on('message')
 def handleMessage(msg):
-  print('Message: ' + msg)
-  send(msg, broadcast=True)
+  print('msg,',type(msg), msg)
+  
+  # print('###############: ' + msg)
+  # send(msg, broadcast=True)
+  
+  return None
 
 
 if __name__=='__main__':
