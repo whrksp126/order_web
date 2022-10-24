@@ -4,6 +4,9 @@ from flask_socketio import SocketIO, send
 
 socketio = SocketIO(app, cors_allowed_origins="*")
 
+
+
+
 @socketio.on('message')
 def handleMessage(msg):
   send(msg, broadcast=True)
