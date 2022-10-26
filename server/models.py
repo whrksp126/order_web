@@ -30,6 +30,8 @@ class Menu(db.Model, UserMixin):
   
   r_menu_list = db.relationship('R_menu_list')  
 
+
+
 class Menu_list(db.Model, UserMixin):
   id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String(45), nullable=False)
