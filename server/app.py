@@ -1,6 +1,7 @@
 from numpy import broadcast
 from routes import app
 from flask_socketio import SocketIO, send
+from flask import session 
 
 socketio = SocketIO(app, cors_allowed_origins="*")
 
@@ -9,6 +10,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 @socketio.on('message')
 def handleMessage(msg):
+  print('######################',session.get('session'))
   send(msg, broadcast=True)
   return None
 
