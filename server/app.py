@@ -1,7 +1,7 @@
 from numpy import broadcast
 from routes import app
 from flask_socketio import SocketIO, send
-from flask import session 
+from flask import request, session 
 
 socketio = SocketIO(app, cors_allowed_origins="*")
 
@@ -10,7 +10,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 @socketio.on('message')
 def handleMessage(msg):
-  print('######################',session.get('session'))
+  # print('######################',request.cookies.get('userEmail'))
   send(msg, broadcast=True)
   return None
 

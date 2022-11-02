@@ -1,7 +1,7 @@
 from email import message
 from unicodedata import category
 from models import User
-from flask import request, jsonify, Blueprint
+from flask import make_response, request, jsonify, Blueprint, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, current_user, logout_user, login_required
 
@@ -79,11 +79,10 @@ def signUp():
 @bp.route('/signIn', methods=['POST'])
 def login():
   if request.method == 'POST':
-        
+    
     json_data = request.get_json()
     email = json_data['email']
     password = json_data['password']
-
     user = User.query.filter_by(email=email).first()
     if user:
       if check_password_hash(user.password, password):
