@@ -39,7 +39,9 @@ const MainOrderList = () => {
   
   const socketTest = () => {
     console.log('selectedItem,,',selectedItem)
-    socket.emit("message", selectedItem);
+    // socket.emit("message", selectedItem);
+    const data = {username : 'testname', room : 'testroom'}
+    socket.emit("join", data);
   }
 
   useEffect(()=> {

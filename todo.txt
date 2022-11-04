@@ -112,4 +112,4 @@
     9. 웹 소켓 구현
       >> 각각 user 별 통신 설정
     (10월29일 시작)
-    (11월 3일 search room methods)
+    (11월 5일 search room methods)

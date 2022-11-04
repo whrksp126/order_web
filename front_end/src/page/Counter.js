@@ -14,14 +14,13 @@ const Counter = () => {
   },[orderSheet.length]);
 
   const getMessages = () => {
-    socket.on("message", orderMenuList => {
+    socket.on("join", orderMenuList => {
+      console.log(orderMenuList)
       if(orderMenuList.length>0){
         setOrderSheet([...orderSheet, orderMenuList]);
       }
     });
   };
-  
-  console.log('orderSheet,',orderSheet)
 
   return (
     <div>
