@@ -41,8 +41,16 @@ const MainOrderList = () => {
     console.log('selectedItem,,',selectedItem)
     // socket.emit("message", selectedItem);
     const data = {username : 'testname', room : 'testroom'}
-    socket.emit("join", data);
+    socket.emit('connection', data);
   }
+  const [response, setResponse] = useState("");
+  useEffect(()=>{
+    // const socket = io.connect(endPoint)
+    socket.on("testname", data => {
+      setResponse(data)
+      console.log('roomnametest 성공', data)
+    })
+  },[])
 
   useEffect(()=> {
     if(selectedItem.length === 0 && newItem !== undefined){

@@ -6,37 +6,47 @@ let socket = io.connect(`${endPoint}`)
 
 const Counter = () => {
 
-  const [orderSheet, setOrderSheet] = useState([
-  ]);
+  const [response, setResponse] = useState("");
+  useEffect(()=>{
+    // const socket = io.connect(endPoint)
+    socket.on("FromAPI", data => {
+      setResponse(data)
+    })
+  },[])
 
-  useEffect(()=> {
-    getMessages();
-  },[orderSheet.length]);
+  // const [orderSheet, setOrderSheet] = useState([]);
 
-  const getMessages = () => {
-    socket.on("join", orderMenuList => {
-      console.log(orderMenuList)
-      if(orderMenuList.length>0){
-        setOrderSheet([...orderSheet, orderMenuList]);
-      }
-    });
-  };
+  // useEffect(()=> {
+  //   getMessages();
+  // },[orderSheet.length]);
+
+  // const getMessages = () => {
+  //   socket.on("join", orderMenuList => {
+  //     console.log(orderMenuList)
+  //     if(orderMenuList.length>0){
+  //       setOrderSheet([...orderSheet, orderMenuList]);
+  //     }
+  //   });
+  // };
 
   return (
-    <div>
-      {orderSheet.length > 0 &&
-        orderSheet.map(orderList => {
-          let orderItem  = '';
-          if(orderList.length > 0){
-            orderList.forEach((menu) => {
-              orderItem += `id : ${menu.id}, count: ${menu.count}`;
-            })
+    <p>
+      It's <time dateTime={response}>{response}</time>
+    </p>
+    // <div>
+    //   {orderSheet.length > 0 &&
+    //     orderSheet.map(orderList => {
+    //       let orderItem  = '';
+    //       if(orderList.length > 0){
+    //         orderList.forEach((menu) => {
+    //           orderItem += `id : ${menu.id}, count: ${menu.count}`;
+    //         })
 
-          }
-          return (<div>{orderItem}</div>)
-        })
-      } 
-    </div>
+    //       }
+    //       return (<div>{orderItem}</div>)
+    //     })
+    //   } 
+    // </div>
   );
 }
 

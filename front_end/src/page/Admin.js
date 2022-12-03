@@ -14,6 +14,7 @@ import AdminAllMenuList from '../component/AdminAllMenuList';
 
 // import { UploadOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import { Col, Layout, Menu, Row } from 'antd';
+import SetTableNumber from '../component/SetTableNumber';
 
 const Admin = () => {
   
@@ -128,6 +129,7 @@ const Admin = () => {
               <Col span={7} >
                 <AdminAddMenu menuList={menuList} />
                 <AdminAddMenuList />
+                <SetTableNumber />
               </Col>
               <Col span={16} offset={1}>
                 <AdminAllMenu menusLists={menusLists} menuList={menuList} />
