@@ -4,7 +4,7 @@ import React from 'react'
 const SetTableNumber = () => {
   const [ form ] = Form.useForm();
   const onFinish = (value) => {
-    console.log(value['tableNumber'])
+    console.log(value['tableNumberj'])
   }
   return (
     <div>
