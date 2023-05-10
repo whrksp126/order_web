@@ -26,7 +26,11 @@ const Client = () => {
   },[])
 
   return (
-    <div>                
+    <div>         
+      <div>
+        <h2>테이블 선택</h2>
+        <p>테이블 번호를 선택하세요!</p>
+      </div>
       <MainHeader />
       {/* <button onClick={logoutUser}>로그아웃</button> */}
       <div style={{display: 'flex', height: '88vh' }}>
